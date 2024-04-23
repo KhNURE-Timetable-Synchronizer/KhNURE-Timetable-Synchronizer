@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: KhNURE-timetable-synchronizer
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+jwt:
+  signature-secret: ${JWT_SIGNATURE_SECRET:mySecret}
+
+
