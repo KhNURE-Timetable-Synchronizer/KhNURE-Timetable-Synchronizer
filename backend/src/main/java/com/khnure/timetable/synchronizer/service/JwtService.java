@@ -5,6 +5,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.khnure.timetable.synchronizer.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,10 +29,18 @@ public class JwtService {
         return true;
     }
 
-    public String create(String email) {
+    public String create(User user) {
         return JWT.create()
-                .withClaim("email", email)
+                .withClaim("id", user.getId())
+                .withClaim("email", user.getEmail())
+                .withClaim("role", user.getRole().name())
                 .withExpiresAt(LocalDateTime.now().atZone(ZoneId.of("UTC")).toInstant())
                 .sign(Algorithm.HMAC256(signatureSecret));
+    }
+
+    public String getEmail(String jwtToken) {
+        return jwtVerifier.verify(jwtToken)
+                .getClaim("email")
+                .asString();
     }
 }

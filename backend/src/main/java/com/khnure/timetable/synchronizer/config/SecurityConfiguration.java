@@ -3,6 +3,7 @@ package com.khnure.timetable.synchronizer.config;
 
 import com.khnure.timetable.synchronizer.filter.JwtFilter;
 import com.khnure.timetable.synchronizer.service.JwtService;
+import com.khnure.timetable.synchronizer.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
     private final JwtService jwtService;
+    private final UserService userService;
 
     @Bean
     public SecurityFilterChain noSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -27,7 +29,7 @@ public class SecurityConfiguration {
                             .anyRequest().authenticated();
                 })
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtFilter(jwtService, userService), UsernamePasswordAuthenticationFilter.class);
 
 
         return httpSecurity.build();

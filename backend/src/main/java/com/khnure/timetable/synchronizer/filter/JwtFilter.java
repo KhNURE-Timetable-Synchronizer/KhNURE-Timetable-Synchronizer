@@ -1,6 +1,7 @@
 package com.khnure.timetable.synchronizer.filter;
 
 import com.khnure.timetable.synchronizer.service.JwtService;
+import com.khnure.timetable.synchronizer.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -19,7 +21,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-
+    private final UserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -36,10 +38,13 @@ public class JwtFilter extends OncePerRequestFilter {
             response.getWriter().close();
             return;
         }
-        //todo load authorities from database
+        String email = jwtService.getEmail(jwtToken);
+        UserDetails userDetails = userService.loadUserByUsername(email);
+
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken("stubPrincipal",
-                        "stubPassword", null);
+                new UsernamePasswordAuthenticationToken(email,
+                        userDetails.getPassword(), userDetails.getAuthorities());
+        authenticationToken.setDetails(userDetails);
 
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
