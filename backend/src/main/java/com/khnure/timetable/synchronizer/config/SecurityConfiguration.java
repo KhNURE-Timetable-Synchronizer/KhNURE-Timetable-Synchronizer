@@ -5,6 +5,7 @@ import com.khnure.timetable.synchronizer.filter.JwtFilter;
 import com.khnure.timetable.synchronizer.service.JwtService;
 import com.khnure.timetable.synchronizer.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfiguration {
+    @Value("${api.base-url}")
+    private String apiVersionPath;
 
     private final JwtService jwtService;
     private final UserService userService;
@@ -25,7 +28,7 @@ public class SecurityConfiguration {
                 .csrf().disable()
                 .cors().disable()
                 .authorizeHttpRequests(urlConfig -> {
-                    urlConfig.requestMatchers("/api/v1/jwt/create").permitAll()
+                    urlConfig.requestMatchers(apiVersionPath + "/jwt/create").permitAll()
                             .anyRequest().authenticated();
                 })
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

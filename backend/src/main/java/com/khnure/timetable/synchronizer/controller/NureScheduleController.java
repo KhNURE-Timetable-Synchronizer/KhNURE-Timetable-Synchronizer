@@ -16,7 +16,7 @@ public class NureScheduleController {
     private final NureScheduleService calendarService;
 
     @GetMapping( "/khnure/timetables")
-    public ResponseEntity<List> getAavailableSchedules (){
+    public ResponseEntity<List> getAvailableSchedules (){
             List<ScheduleDto> groups = calendarService.getGroups();
             List<ScheduleDto> teachers = calendarService.getTeachers();
 
