@@ -1,6 +1,7 @@
 spring:
   application:
     name: KhNURE-timetable-synchronizer
+    base-url: '/api/v1'
 
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver

@@ -1,6 +1,5 @@
 package com.khnure.timetable.synchronizer.dto;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
 
 @Data
