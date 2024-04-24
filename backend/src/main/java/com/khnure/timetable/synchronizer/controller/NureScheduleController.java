@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${spring.application.base-url}")
+@RequestMapping("${api.base-url}")
 public class NureScheduleController {
     private final NureScheduleService calendarService;
 
