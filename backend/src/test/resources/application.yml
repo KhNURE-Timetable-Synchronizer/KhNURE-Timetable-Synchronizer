@@ -9,4 +9,10 @@ spring:
 jwt:
   signature-secret: ${JWT_SIGNATURE_SECRET:mySecret}
 
+google:
+  clientId: stub
+  clientSecret: stub
+  application:
+    name: '[Desktop] KhNURE Timetable Synchronizer'
+
 

@@ -11,3 +11,9 @@ spring:
 jwt:
   signature-secret: ${JWT_SIGNATURE_SECRET:mySecret}
 schedule-api-url: 'https://api.mindenit.tech'
+
+google:
+  clientId: ${OAUTH2_GOOGLE_CLIENT-ID}
+  clientSecret: ${OAUTH2_GOOGLE_CLIENT-SECRET}
+  application:
+    name: '[Desktop] KhNURE Timetable Synchronizer'
