@@ -1,8 +1,9 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
+import { useAuth } from "../utils/AuthProvider"
 
 export const Route = createFileRoute("/login")({
   beforeLoad: async ({ context }) => {
-    if (context.isAuthenticated) {
+    if (context.auth.isAuthenticated) {
       throw redirect({
         code: 403,
         to: "/",
@@ -13,5 +14,14 @@ export const Route = createFileRoute("/login")({
 })
 
 function Login() {
-  return <div className="p-2">Hello from Login!</div>
+  const { isLoading, login } = useAuth()
+
+  return (
+    <div className="w-full h-full flex justify-center items-center">
+      <button onClick={login} className="btn btn-sm btn-primary" disabled={isLoading}>
+        {isLoading && <span className="loading loading-spinner" />}
+        Login with Google
+      </button>
+    </div>
+  )
 }

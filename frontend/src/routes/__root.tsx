@@ -3,29 +3,49 @@ import {
   Link,
   Outlet,
 } from "@tanstack/react-router"
-import { TanStackRouterDevtools } from "@tanstack/router-devtools"
+import React, { Suspense } from "react"
+import { AuthState, useAuth } from "../utils/AuthProvider"
+import { QueryClient } from "@tanstack/react-query"
 
 interface RootRouterContext {
-  isAuthenticated: boolean
+  auth: AuthState
+  queryClient: QueryClient
 }
 
 export const Route = createRootRouteWithContext<RootRouterContext>()({
-  component: () => (
-    <>
-      <div className="p-2 flex gap-2">
-        <Link to="/" className="[&.active]:font-bold">
-          Home
-        </Link>{" "}
-        <Link to="/about" className="[&.active]:font-bold">
-          About
-        </Link>{" "}
-        <Link to="/login" className="[&.active]:font-bold">
-          Login
-        </Link>
-      </div>
-      <hr />
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
-  ),
+  component: () => {
+    const { isAuthenticated, logout } = useAuth()
+
+    return (
+      <>
+        <div className="p-4 flex justify-between gap-2">
+          <Link to="/" className="text-xl font-bold text-blue-700 font-mono">
+            Timetable Synchronizer
+          </Link>
+          {isAuthenticated && (
+            <Link to="/login" className="btn btn-sm" onClick={logout}>
+              Logout
+            </Link>
+          )}
+        </div>
+        <hr className="mb-2" />
+        <Outlet />
+        <Suspense>
+          <TanStackRouterDevtools />
+        </Suspense>
+      </>
+    )
+  },
 })
+
+const TanStackRouterDevtools =
+  process.env.NODE_ENV === "production"
+    ? () => null // Render nothing in production
+    : React.lazy(() =>
+        // Lazy load in development
+        import("@tanstack/router-devtools").then(res => ({
+          default: res.TanStackRouterDevtools,
+          // For Embedded Mode
+          // default: res.TanStackRouterDevtoolsPanel
+        }))
+      )
