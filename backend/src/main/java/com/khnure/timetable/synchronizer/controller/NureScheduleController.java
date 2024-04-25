@@ -17,13 +17,13 @@ public class NureScheduleController {
 
     @GetMapping( "/khnure/timetables")
     public ResponseEntity<List> getAvailableSchedules (){
-            List<ScheduleDto> groups = calendarService.getGroups();
-            List<ScheduleDto> teachers = calendarService.getTeachers();
+        List<ScheduleDto> groups = calendarService.getGroups();
+        List<ScheduleDto> teachers = calendarService.getTeachers();
 
-            List<ScheduleDto> response = new ArrayList<>();
-            response.addAll(groups);
-            response.addAll(teachers);
+        List<ScheduleDto> response = new ArrayList<>();
+        response.addAll(groups);
+        response.addAll(teachers);
 
-            return ResponseEntity.ok(response);
+        return ResponseEntity.ok(response);
     }
 }
