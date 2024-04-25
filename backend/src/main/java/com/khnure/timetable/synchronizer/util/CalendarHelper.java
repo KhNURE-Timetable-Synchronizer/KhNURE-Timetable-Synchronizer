@@ -4,7 +4,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.calendar.Calendar;
+import com.khnure.timetable.synchronizer.model.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +30,12 @@ public class CalendarHelper {
 
     public Calendar getUserCalendar(Long userId) {
         return calendarsMap.get(userId);
+    }
+    public Calendar getUserCalendar(){
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        CustomUserDetails customUserDetails = (CustomUserDetails) securityContext.getAuthentication().getDetails();
+
+        return getUserCalendar(customUserDetails.getUser().getId());
     }
 
     public boolean userHasCalendar(Long userId) {

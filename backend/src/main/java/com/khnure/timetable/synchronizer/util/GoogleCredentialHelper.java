@@ -1,6 +1,9 @@
 package com.khnure.timetable.synchronizer.util;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.khnure.timetable.synchronizer.dto.google.GoogleTokenDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -12,19 +15,27 @@ public class GoogleCredentialHelper {
     private String clientId;
     @Value("${google.clientSecret}")
     private String clientSecret;
+    private final HttpTransport httpTransport;
+    private final JsonFactory jsonFactory;
 
     private final ConcurrentHashMap<Long, GoogleCredential> credentialMap;
 
 
-    public GoogleCredentialHelper() {
+    public GoogleCredentialHelper(HttpTransport httpTransport, JsonFactory jsonFactory) {
+        this.httpTransport = httpTransport;
+        this.jsonFactory = jsonFactory;
         credentialMap = new ConcurrentHashMap<>();
     }
 
-    public GoogleCredential putCredentials(Long userId, String accessToken) {
+    public GoogleCredential putCredentials(Long userId, GoogleTokenDto googleTokenDto) {
         GoogleCredential googleCredential = new GoogleCredential.Builder()
                 .setClientSecrets(clientId, clientSecret)
+                .setTransport(httpTransport)
+                .setJsonFactory(jsonFactory)
                 .build()
-                .setAccessToken(accessToken);
+                .setAccessToken(googleTokenDto.getAccessToken())
+                .setExpiresInSeconds(googleTokenDto.getExpiresIn())
+                .setRefreshToken(googleTokenDto.getRefreshToken());
 
         credentialMap.put(userId, googleCredential);
         return googleCredential;

@@ -20,6 +20,9 @@ import java.time.Clock;
 public class ApplicationConfiguration {
     @Value("${jwt.signature-secret}")
     private String signatureSecret;
+    @Value("${google.clientId}")
+    private String clientId;
+
 
     @Bean
     public HttpClient httpClient() {
@@ -27,19 +30,20 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public JWTVerifier jwtVerifier(){
+    public JWTVerifier jwtVerifier() {
         JWTVerifier.BaseVerification verification = (JWTVerifier.BaseVerification) JWT.require(Algorithm.HMAC256(signatureSecret));
         Clock clock = Clock.systemUTC();
-       return verification.build(clock);
+        return verification.build(clock);
     }
+
     @Bean
-    public JsonFactory jsonFactory(){
+    public JsonFactory jsonFactory() {
         return new GsonFactory();
     }
 
     @SneakyThrows
     @Bean
-    public HttpTransport httpTransport(){
+    public HttpTransport httpTransport() {
         return GoogleNetHttpTransport.newTrustedTransport();
     }
 
