@@ -8,5 +8,12 @@ spring:
     password: sa
 jwt:
   signature-secret: ${JWT_SIGNATURE_SECRET:mySecret}
-
+schedule-api-url: 'https://api.mindenit.tech'
+google:
+  clientId: stub
+  clientSecret: stub
+  application:
+    name: '[Desktop] KhNURE Timetable Synchronizer'
+api:
+  base-url: '/api/v1'
 
