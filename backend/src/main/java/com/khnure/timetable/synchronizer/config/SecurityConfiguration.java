@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,8 +23,10 @@ public class SecurityConfiguration {
     private final JwtService jwtService;
     private final UserService userService;
 
+
     @Bean
-    public SecurityFilterChain noSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    @Profile("default")
+    public SecurityFilterChain withSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf().disable()
                 .cors().disable()
@@ -36,5 +39,14 @@ public class SecurityConfiguration {
 
 
         return httpSecurity.build();
+    }
+
+    @Bean
+    @Profile("test")
+    public SecurityFilterChain noSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity
+                .csrf().disable()
+                .cors().disable()
+                .build();
     }
 }
