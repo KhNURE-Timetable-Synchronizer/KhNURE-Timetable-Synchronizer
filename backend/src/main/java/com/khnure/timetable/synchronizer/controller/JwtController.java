@@ -51,8 +51,9 @@ public class JwtController {
 
         Cookie cookie = new Cookie("JWT", jwt);
         cookie.setMaxAge(3600);
-        cookie.setSecure(true);
+        cookie.setSecure(false);
         cookie.setPath("/");
+        cookie.setDomain(null);
         response.addCookie(cookie);
 
         return ResponseEntity.ok()
