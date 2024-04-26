@@ -3,6 +3,7 @@ import Cookies from "js-cookie"
 import { createContext, useContext, useState } from "react"
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+const GOOGLE_AUTH_REDIRECT_URL = import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URL
 
 const loginUrl = `${BACKEND_URL}/api/v1/jwt/create`
 const cookieName = "JWT"
@@ -29,6 +30,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useGoogleLogin({
     flow: "auth-code",
+    redirect_uri: GOOGLE_AUTH_REDIRECT_URL,
     onSuccess: async credentialResponse => {
       setIsLoading(true)
 
