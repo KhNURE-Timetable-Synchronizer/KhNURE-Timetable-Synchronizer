@@ -10,5 +10,4 @@ public class KhNureTimetableSynchronizerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(KhNureTimetableSynchronizerApplication.class, args);
 	}
-
 }
