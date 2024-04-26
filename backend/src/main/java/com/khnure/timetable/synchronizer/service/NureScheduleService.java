@@ -34,7 +34,7 @@ public class NureScheduleService {
     private final ScheduleDtoMapper scheduleMapper;
     private final PairMapper pairMapper;
 
-    private static final ZoneId ZONE_ID = ZoneId.of("Europe/Kyiv");
+    private static final ZoneId ZONE_ID = ZoneId.of("Europe/Kiev");
     private static final String GROUP_API = "/groups";
     private static final String TEACHERS_API = "/teachers";
     private static final String SCHEDULE_API = "/schedule";
