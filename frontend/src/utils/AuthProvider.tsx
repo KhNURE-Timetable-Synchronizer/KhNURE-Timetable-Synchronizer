@@ -35,6 +35,9 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       const res = await fetch(loginUrl, {
         method: "POST",
         body: JSON.stringify(credentialResponse),
+        headers: {
+          "Content-Type": "application/json",
+        },
       })
 
       if (!res.ok) {

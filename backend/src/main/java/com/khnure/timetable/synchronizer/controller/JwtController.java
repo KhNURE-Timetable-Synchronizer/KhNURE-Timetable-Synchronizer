@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,8 +34,10 @@ public class JwtController {
     private final ObjectMapper objectMapper;
 
     @PostMapping("/jwt/create")
-    public ResponseEntity<String> createJwt(String idToken, HttpServletResponse response) throws JsonProcessingException {
-        GoogleTokenDto googleTokenDto = googleService.getByCodeToken(idToken);
+    public ResponseEntity<String> createJwt(@RequestBody Map<String,Object> body, HttpServletResponse response) throws JsonProcessingException {
+
+        String code = (String) body.get("code");
+        GoogleTokenDto googleTokenDto = googleService.getByCodeToken(code);
         String email = googleService.getUserEmail(googleTokenDto);
 
         User user = userService.findByEmailOrCreateUser(email);
