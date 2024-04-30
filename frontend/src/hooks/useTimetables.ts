@@ -5,7 +5,7 @@ export type TimetableShort = { id: number; name: string }
 
 const fetchTimetables = async () => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v1/khnure/timetables`
+    `${import.meta.env.VITE_BACKEND_URL}/api/v1/timetables/google`
   )
   if (!res.ok) {
     throw new Error("GET Timetables response was not ok")
