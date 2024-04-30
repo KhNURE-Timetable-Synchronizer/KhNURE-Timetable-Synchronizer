@@ -18,8 +18,8 @@ export const Route = createRootRouteWithContext<RootRouterContext>()({
 
     return (
       <>
-        <div className="p-4 flex justify-between gap-2">
-          <Link to="/" className="text-xl font-bold text-blue-700 font-mono">
+        <div className="w-full max-w-6xl mx-auto p-4 flex justify-between gap-2">
+          <Link to="/" className="text-lg sm:text-xl font-bold text-blue-700 font-mono">
             Timetable Synchronizer
           </Link>
           {isAuthenticated && (
@@ -29,7 +29,9 @@ export const Route = createRootRouteWithContext<RootRouterContext>()({
           )}
         </div>
         <hr className="mb-2" />
-        <Outlet />
+        <div className="w-full max-w-6xl mx-auto p-2">
+          <Outlet />
+        </div>
         <Suspense>
           <TanStackRouterDevtools />
         </Suspense>
