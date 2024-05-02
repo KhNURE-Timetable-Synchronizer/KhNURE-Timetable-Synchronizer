@@ -26,7 +26,9 @@ public class GoogleCalendarController {
     }
 
     @GetMapping
-    public ResponseEntity<List> getTimetablesByUserId(@RequestParam Long userId){
+    public ResponseEntity<List> getTimetablesByUserId(Authentication authentication){
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getDetails();
+        Long userId = userDetails.getUser().getId();
         List<GoogleCalendarDto> response = googleCalendarService.getTimetablesByUserId(userId);
         return ResponseEntity.ok(response);
     }
