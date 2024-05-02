@@ -32,4 +32,13 @@ public class GoogleCalendarController {
         List<GoogleCalendarDto> response = googleCalendarService.getTimetablesByUserId(userId);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCalendarById(@PathVariable Long id, Authentication authentication){
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getDetails();
+        Long userId = userDetails.getUser().getId();
+        googleCalendarService.deleteCalendarByIdAndUserId(id, userId);
+
+        return ResponseEntity.ok().build();
+    }
 }

@@ -6,6 +6,8 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.khnure.timetable.synchronizer.dto.GoogleCalendarDto;
 import com.khnure.timetable.synchronizer.dto.TimetableExportDto;
+import com.khnure.timetable.synchronizer.exception.GoogleCalendarDeleteException;
+import com.khnure.timetable.synchronizer.exception.GoogleCalendarNotFoundException;
 import com.khnure.timetable.synchronizer.mapper.GoogleCalendarDtoMapper;
 import com.khnure.timetable.synchronizer.model.GoogleCalendar;
 import com.khnure.timetable.synchronizer.model.Group;
@@ -14,6 +16,7 @@ import com.khnure.timetable.synchronizer.model.Teacher;
 import com.khnure.timetable.synchronizer.repository.GoogleCalendarRepository;
 import com.khnure.timetable.synchronizer.util.CalendarHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.ZoneId;
@@ -44,7 +47,7 @@ public class GoogleCalendarService {
     }
 
     public void export(Long userId, TimetableExportDto timetableExportDto) {
-        String timetableName= nureScheduleService.getScheduleNameByIdAndType(timetableExportDto.getTimetableId(), timetableExportDto.getTypeScheduleDto());
+        String timetableName = nureScheduleService.getScheduleNameByIdAndType(timetableExportDto.getTimetableId(), timetableExportDto.getTypeScheduleDto());
 
         try {
             Calendar calendar = calendarHelper.getUserCalendar();
@@ -124,5 +127,20 @@ public class GoogleCalendarService {
                 .map(googleCalendarDtoMapper::toDto)
                 .toList();
         return calendarDtoList;
+    }
+
+    @Transactional
+    public void deleteCalendarByIdAndUserId(Long id, Long userId) {
+        String calendarId = googleCalendarRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new GoogleCalendarNotFoundException(id))
+                .getCalendarId();
+        googleCalendarRepository.deleteByIdAndUserId(id, userId);
+
+        Calendar calendar = calendarHelper.getUserCalendar();
+        try {
+            calendar.calendarList().delete(calendarId).execute();
+        } catch (IOException exception) {
+            throw new GoogleCalendarDeleteException(exception);
+        }
     }
 }
