@@ -68,9 +68,24 @@ export default function useTimetables() {
     }
   }
 
+  const deleteTimetable = async (id: number) => {
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/timetables/google/${id}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    )
+    if (!res.ok) {
+      alert("Failed to delete timetable")
+      throw new Error("DELETE Timetable response was not ok")
+    }
+  }
+
   return {
     personalTimetables: personal,
     allTimetables: all,
     addTimetable,
+    deleteTimetable,
   }
 }
