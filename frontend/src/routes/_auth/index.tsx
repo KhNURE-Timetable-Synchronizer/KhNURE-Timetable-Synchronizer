@@ -1,25 +1,26 @@
 import { createFileRoute } from "@tanstack/react-router"
 import useTimetables from "../../hooks/useTimetables"
 import { Trash2Icon } from "lucide-react"
+import AddTimetableButton from "../../components/AddTimetableButton"
 
 export const Route = createFileRoute("/_auth/")({
   component: Home,
 })
 
 function Home() {
-  const { timetables, isLoading } = useTimetables()
+  const { personalTimetables, isPersonalLoading } = useTimetables()
 
   return (
     <div className="flex gap-2">
       <div className="space-y-4 w-64">
-        {isLoading ? (
+        {isPersonalLoading ? (
           <div className="flex justify-center">
             <span className="loading loading-spinner loading-md" />
           </div>
         ) : (
           <table className="table table-sm">
             <tbody>
-              {timetables?.map(timetable => (
+              {personalTimetables?.map(timetable => (
                 <tr key={timetable.id} className="hover">
                   <td>{timetable.name}</td>
                   <td className="w-6">
@@ -42,7 +43,7 @@ function Home() {
                       <div className="modal-box">
                         <h3 className="font-bold text-lg">Hello!</h3>
                         <p className="py-4">
-                          Press ESC key or click outside to close
+                          Press ESC key to close
                         </p>
                       </div>
                     </dialog>
@@ -52,7 +53,7 @@ function Home() {
             </tbody>
           </table>
         )}
-        <button className="btn btn-primary btn-sm w-full">Add Timetable</button>
+        <AddTimetableButton />
       </div>
       <div className="flex-1 bg-orange-300" />
     </div>
