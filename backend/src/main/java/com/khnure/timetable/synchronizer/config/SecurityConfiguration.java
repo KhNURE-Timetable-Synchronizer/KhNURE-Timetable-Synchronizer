@@ -45,11 +45,12 @@ public class SecurityConfiguration {
 
         return httpSecurity.build();
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("POST","GET","OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("POST", "GET", "OPTIONS", "DELETE", "PATCH", "PUT"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("Set-Cookie"));
         configuration.setAllowCredentials(true);
@@ -58,6 +59,7 @@ public class SecurityConfiguration {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
     @Bean
     @Profile("test")
     public SecurityFilterChain noSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
