@@ -109,7 +109,7 @@ public class NureScheduleService {
             HttpGet request = new HttpGet(getUrl(SCHEDULE_API));
             URI uri = new URIBuilder(request.getURI())
                     .addParameter("id", String.valueOf(timetableExportDto.getTimetableId()))
-                    .addParameter("type", "group")
+                    .addParameter("type", timetableExportDto.getTypeScheduleDto().getValue())
                     .addParameter("start_time", String.valueOf(timetableExportDto.getStartDate().atStartOfDay(ZONE_ID).toEpochSecond()))
                     .addParameter("end_time", String.valueOf(timetableExportDto.getEndDate().atStartOfDay(ZONE_ID).toEpochSecond()))
                     .build();
