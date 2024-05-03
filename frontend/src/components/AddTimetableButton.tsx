@@ -2,13 +2,13 @@ import { useState } from "react"
 import useTimetables, { Timetable } from "../hooks/useTimetables"
 
 export default function AddTimetableButton() {
-  const { allTimetables, addTimetable, refetchPersonal } = useTimetables()
+  const { allTimetables, addTimetable, personalTimetables } = useTimetables()
 
   const [search, setSearch] = useState("")
   const [timetable, setTimetable] = useState<Timetable | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const filteredTimetables = allTimetables?.filter(timetable =>
+  const filteredTimetables = allTimetables.data?.filter(timetable =>
     timetable.name.toLowerCase().includes(search.toLowerCase())
   )
 
@@ -19,6 +19,7 @@ export default function AddTimetableButton() {
     const formData = new FormData(form)
     const startDate = formData.get("start_date") as string
     const endDate = formData.get("end_date") as string
+
     if (!timetable) return
     await addTimetable({
       timetableId: timetable.id,
@@ -26,12 +27,16 @@ export default function AddTimetableButton() {
       startDate: new Date(startDate),
       endDate: new Date(endDate),
     })
+
     setIsLoading(false)
     closeModals()
-    await refetchPersonal()
+    await personalTimetables.refetch()
     setSearch("")
     setTimetable(null)
   }
+
+  const isTimetableAdded = (timetable: Timetable) =>
+    personalTimetables.data?.find(t => t.name === timetable.name)
 
   const openChooseModal = () =>
     (document.getElementById("add_timetable_modal_choose") as any).showModal()
@@ -73,13 +78,24 @@ export default function AddTimetableButton() {
                 {filteredTimetables?.map(timetable => (
                   <tr
                     key={timetable.id}
-                    className="hover cursor-pointer"
+                    className={
+                      "hover" +
+                      (isTimetableAdded(timetable) ? "" : " cursor-pointer")
+                    }
                     onClick={() => {
+                      if (isTimetableAdded(timetable)) {
+                        return
+                      }
                       setTimetable(timetable)
                       openConfirmModal()
                     }}
                   >
                     <td>{timetable.name}</td>
+                    <td>
+                      {isTimetableAdded(timetable) && (
+                        <div className="badge badge-primary">Added</div>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -144,7 +160,7 @@ export default function AddTimetableButton() {
               disabled={isLoading}
             >
               {isLoading && <span className="loading loading-spinner"></span>}
-              Add Timetable
+              Export Timetable
             </button>
           </div>
         </div>

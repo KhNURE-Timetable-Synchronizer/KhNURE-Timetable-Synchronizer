@@ -35,18 +35,15 @@ const fetchAllTimetables = async () => {
 }
 
 export default function useTimetables() {
-  const {
-    data: personalTimetables,
-    isLoading: isPersonalLoading,
-    refetch: refetchPersonal,
-  } = useQuery({
+  const personal = useQuery({
     queryKey: personalTimetablesQueryKey,
     queryFn: fetchPersonalTimetables,
   })
 
-  const { data: allTimetables, isLoading: isAllLoading } = useQuery({
+  const all = useQuery({
     queryKey: allTimetablesQueryKey,
     queryFn: fetchAllTimetables,
+    refetchOnWindowFocus: false,
   })
 
   const addTimetable = async (params: {
@@ -72,11 +69,8 @@ export default function useTimetables() {
   }
 
   return {
-    personalTimetables: personalTimetables,
-    isPersonalLoading,
-    refetchPersonal,
-    allTimetables,
-    isAllLoading,
+    personalTimetables: personal,
+    allTimetables: all,
     addTimetable,
   }
 }
