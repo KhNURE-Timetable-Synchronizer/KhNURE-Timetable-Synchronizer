@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
 
-export const timetablesQueryKey = ["timetables"]
-export type TimetableShort = { id: number; name: string }
+export type PersonalTimetable = { id: number; name: string }
 
-const fetchTimetables = async () => {
+export const personalTimetablesQueryKey = ["personalTimetables"]
+const fetchPersonalTimetables = async () => {
   const res = await fetch(
     `${import.meta.env.VITE_BACKEND_URL}/api/v1/timetables/google`,
     {
@@ -11,17 +11,66 @@ const fetchTimetables = async () => {
     }
   )
   if (!res.ok) {
-    throw new Error("GET Timetables response was not ok")
+    throw new Error("GET Personal Timetables response was not ok")
   }
   const data = await res.json()
-  return data as TimetableShort[]
+  return data as PersonalTimetable[]
+}
+
+export type Timetable = { id: number; name: string; type: string }
+
+export const allTimetablesQueryKey = ["allTimetables"]
+const fetchAllTimetables = async () => {
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/api/v1/khnure/timetables`,
+    {
+      credentials: "include",
+    }
+  )
+  if (!res.ok) {
+    throw new Error("GET All Timetables response was not ok")
+  }
+  const data = await res.json()
+  return data as Timetable[]
 }
 
 export default function useTimetables() {
-  const { data, isError, isLoading, status } = useQuery({
-    queryKey: timetablesQueryKey,
-    queryFn: fetchTimetables,
+  const personal = useQuery({
+    queryKey: personalTimetablesQueryKey,
+    queryFn: fetchPersonalTimetables,
   })
 
-  return { timetables: data, status, isError, isLoading }
+  const all = useQuery({
+    queryKey: allTimetablesQueryKey,
+    queryFn: fetchAllTimetables,
+    refetchOnWindowFocus: false,
+  })
+
+  const addTimetable = async (params: {
+    timetableId: number
+    timetableType: string
+    startDate: Date
+    endDate: Date
+  }) => {
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/timetables/google`,
+      {
+        method: "POST",
+        body: JSON.stringify({ ...params }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    )
+    if (!res.ok) {
+      throw new Error("POST Timetable response was not ok")
+    }
+  }
+
+  return {
+    personalTimetables: personal,
+    allTimetables: all,
+    addTimetable,
+  }
 }
