@@ -1,6 +1,10 @@
 import { useQuery } from "@tanstack/react-query"
 
-export type PersonalTimetable = { id: number; name: string }
+export type PersonalTimetable = {
+  id: number
+  name: string
+  googleCalendarId: string
+}
 
 export const personalTimetablesQueryKey = ["personalTimetables"]
 const fetchPersonalTimetables = async () => {
