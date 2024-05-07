@@ -7,5 +7,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface GoogleCalendarDtoMapper {
+     @Mapping(source = "calendarId",target = "googleCalendarId")
      GoogleCalendarDto toDto(GoogleCalendar googleCalendar);
 }
