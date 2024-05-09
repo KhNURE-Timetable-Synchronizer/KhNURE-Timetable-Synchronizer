@@ -1,5 +1,6 @@
 package com.khnure.timetable.synchronizer.service;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
@@ -15,6 +16,7 @@ import com.khnure.timetable.synchronizer.model.Pair;
 import com.khnure.timetable.synchronizer.model.Teacher;
 import com.khnure.timetable.synchronizer.repository.GoogleCalendarRepository;
 import com.khnure.timetable.synchronizer.util.CalendarHelper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -139,7 +141,13 @@ public class GoogleCalendarService {
         Calendar calendar = calendarHelper.getUserCalendar();
         try {
             calendar.calendarList().delete(calendarId).execute();
-        } catch (IOException exception) {
+        }
+        catch (GoogleJsonResponseException exception) {
+            if (exception.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
+                return;
+            }
+            throw new GoogleCalendarDeleteException(exception);
+        }catch (IOException exception) {
             throw new GoogleCalendarDeleteException(exception);
         }
     }
