@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class JwtService {
                 .withClaim("id", user.getId())
                 .withClaim("email", user.getEmail())
                 .withClaim("role", user.getRole().name())
-                .withExpiresAt(LocalDateTime.now().atZone(ZoneId.of("UTC")).toInstant())
+                .withExpiresAt(LocalDateTime.now().atZone(ZoneId.of("Europe/Kiev")).toInstant().plus(1, ChronoUnit.HOURS))
                 .sign(Algorithm.HMAC256(signatureSecret));
     }
 
