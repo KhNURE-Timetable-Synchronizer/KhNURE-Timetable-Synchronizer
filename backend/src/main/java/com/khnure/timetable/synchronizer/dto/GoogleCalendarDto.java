@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class GoogleCalendarDto {
-    private String id;
+    private Long id;
     @JsonAlias("google_calendar_id")
     private String googleCalendarId;
     private String name;
