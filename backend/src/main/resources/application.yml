@@ -3,7 +3,7 @@ spring:
     name: KhNURE-timetable-synchronizer
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/timetable}
+    url: ${DATABASE_URL}
     username: ${DATABASE_USERNAME:root}
     password: ${DATABASE_PASSWORD:root}
 jwt:

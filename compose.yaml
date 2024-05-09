@@ -1,0 +1,37 @@
+services:
+  mysql-database:
+    image: mysql:8.0.36
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DATABASE_NAME}
+      MYSQL_USER: ${DATABASE_USERNAME}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-database-vol:/var/lib/mysql
+    healthcheck:
+      test: "exit 0"
+      interval: 30s
+      retries: 2
+      timeout: 5s
+  backend:
+    links:
+      - "mysql-database:mysql-database"
+    build: backend/.
+    depends_on:
+      mysql-database:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      OAUTH2_GOOGLE_CLIENT-ID: ${OAUTH2_GOOGLE_CLIENT-ID}
+      OAUTH2_GOOGLE_CLIENT-SECRET: ${OAUTH2_GOOGLE_CLIENT-SECRET}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI}
+volumes:
+  mysql-database-vol:
+    name: timetable
