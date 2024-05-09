@@ -40,6 +40,18 @@ public class GoogleCredentialHelper {
         credentialMap.put(userId, googleCredential);
         return googleCredential;
     }
+    public GoogleCredential putCredentials(Long userId, String googleRefreshToken) {
+        GoogleCredential googleCredential = new GoogleCredential.Builder()
+                .setClientSecrets(clientId, clientSecret)
+                .setTransport(httpTransport)
+                .setJsonFactory(jsonFactory)
+                .build()
+                .setExpiresInSeconds(0L)
+                .setRefreshToken(googleRefreshToken);
+
+        credentialMap.put(userId, googleCredential);
+        return googleCredential;
+    }
 
     public boolean containsCredentials(Long userId) {
         return credentialMap.containsKey(userId);
@@ -48,7 +60,7 @@ public class GoogleCredentialHelper {
     public boolean credentialsExpired(Long userId) {
         Long expiresInSeconds = credentialMap.get(userId).getExpiresInSeconds();
         if (expiresInSeconds == null) {
-            return false; //todo stub returning
+            return true; //todo stub returning
         }
         return expiresInSeconds <= 0;
     }
@@ -56,4 +68,6 @@ public class GoogleCredentialHelper {
     public GoogleCredential getCredentials(Long userId) {
         return credentialMap.get(userId);
     }
+
+
 }

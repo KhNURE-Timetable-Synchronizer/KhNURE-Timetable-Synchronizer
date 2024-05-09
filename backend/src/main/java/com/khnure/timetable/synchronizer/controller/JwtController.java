@@ -13,6 +13,7 @@ import com.khnure.timetable.synchronizer.util.GoogleCredentialHelper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,7 +41,7 @@ public class JwtController {
         GoogleTokenDto googleTokenDto = googleService.getByCodeToken(code);
         String email = googleService.getUserEmail(googleTokenDto);
 
-        User user = userService.findByEmailOrCreateUser(email);
+        User user = userService.findByEmailOrCreateUser(email, googleTokenDto.getRefreshToken());
 
         if (!calendarHelper.userHasCalendar(user.getId()) || googleCredentialHelper.credentialsExpired(user.getId())) {
             GoogleCredential googleCredential = googleCredentialHelper.putCredentials(user.getId(), googleTokenDto);
@@ -57,6 +58,7 @@ public class JwtController {
         response.addCookie(cookie);
 
         return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(objectMapper.writeValueAsString(Map.of("JWT", jwt)));
     }
 }

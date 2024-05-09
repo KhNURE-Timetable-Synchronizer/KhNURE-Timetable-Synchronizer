@@ -1,9 +1,12 @@
 package com.khnure.timetable.synchronizer.config;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.khnure.timetable.synchronizer.filter.JwtFilter;
 import com.khnure.timetable.synchronizer.service.JwtService;
 import com.khnure.timetable.synchronizer.service.UserService;
+import com.khnure.timetable.synchronizer.util.CalendarHelper;
+import com.khnure.timetable.synchronizer.util.GoogleCredentialHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +30,9 @@ public class SecurityConfiguration {
 
     private final JwtService jwtService;
     private final UserService userService;
-
+    private final CalendarHelper calendarHelper;
+    private final GoogleCredentialHelper googleCredentialHelper;
+    private final ObjectMapper objectMapper;
 
     @Bean
     @Profile("default")
@@ -40,10 +45,14 @@ public class SecurityConfiguration {
                             .anyRequest().authenticated();
                 })
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtFilter(jwtService, userService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
 
         return httpSecurity.build();
+    }
+
+    private JwtFilter jwtFilter() {
+        return new JwtFilter(jwtService, userService, calendarHelper, googleCredentialHelper, objectMapper);
     }
 
     @Bean
