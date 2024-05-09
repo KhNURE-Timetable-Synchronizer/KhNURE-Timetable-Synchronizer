@@ -5,4 +5,4 @@ COPY src ./src
 
 RUN mvn clean install
 
-CMD ["java", "-jar", "target/KhNURE-timetable-synchronizer-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-Duser.timezone=Europe/Kiev","-jar", "target/KhNURE-timetable-synchronizer-0.0.1-SNAPSHOT.jar"]
