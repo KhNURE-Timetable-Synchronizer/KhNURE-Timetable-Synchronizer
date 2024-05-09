@@ -26,15 +26,19 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public User findByEmailOrCreateUser(String email) {
+    public User findByEmailOrCreateUser(String email, String refreshToken) {
         Optional<User> userFromDatabase = findByEmail(email);
         User user;
         if (userFromDatabase.isPresent()) {
-            return userFromDatabase.get();
+            user = userFromDatabase.get();
+            user.setGoogleRefreshToken(refreshToken);
+            save(user);
+            return user;
         }
         user = User.builder()
                 .email(email)
                 .role(Role.USER)
+                .googleRefreshToken(refreshToken)
                 .build();
 
         return save(user);
