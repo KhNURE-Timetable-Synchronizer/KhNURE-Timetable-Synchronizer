@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ScheduleDto {
-    private String id;
+    private Long id;
     private String name;
     private TypeScheduleDto type;
 }

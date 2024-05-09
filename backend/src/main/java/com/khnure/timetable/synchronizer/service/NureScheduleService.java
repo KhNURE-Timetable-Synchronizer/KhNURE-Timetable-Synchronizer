@@ -90,7 +90,7 @@ public class NureScheduleService {
     }
     public String getGroupScheduleNameById(Long id){
         return getGroups().stream()
-                .filter(scheduleDto ->  scheduleDto.getId().equals(String.valueOf(id)))
+                .filter(scheduleDto ->  scheduleDto.getId().equals(id))
                 .map(ScheduleDto::getName)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException(String.format("Group by id {%d} didn't found", id)));
@@ -98,7 +98,7 @@ public class NureScheduleService {
 
     public String getTeacherScheduleNameById(Long id){
         return getTeachers().stream()
-                .filter(scheduleDto ->  scheduleDto.getId().equals(String.valueOf(id)))
+                .filter(scheduleDto ->  scheduleDto.getId().equals(id))
                 .map(ScheduleDto::getName)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException(String.format("Group by id {%d} didn't found", id)));
