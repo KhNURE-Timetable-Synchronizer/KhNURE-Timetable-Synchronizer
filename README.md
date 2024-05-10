@@ -109,7 +109,7 @@ For downloading the project locally you can use two variants:
 ## Authors
 
 * **Stanislav Hlova** - *Backend Developer* - [StasonMendelso](https://github.com/StasonMendelso)  [![wakatime](https://wakatime.com/badge/user/b33e0124-90c1-44a9-95a8-0f09b324ad70/project/018e85b7-9a4a-4fae-acf9-9ebf4d12c6cd.svg)](https://wakatime.com/badge/user/b33e0124-90c1-44a9-95a8-0f09b324ad70/project/018e85b7-9a4a-4fae-acf9-9ebf4d12c6cd)
-* **Dmytro Kuzmenko** - *Backend Developer* - [Mourgarth](https://github.com/Mourgarth)
+* **Dmytro Kuzmenko** - *Backend Developer* - [Mourgarth](https://github.com/Mourgarth)  [![wakatime](https://wakatime.com/badge/user/018eba51-f183-462e-bf52-7d1232edb5d0/project/018f0142-cd24-46b3-9cdd-b700d9f7453d.svg)](https://wakatime.com/badge/user/018eba51-f183-462e-bf52-7d1232edb5d0/project/018f0142-cd24-46b3-9cdd-b700d9f7453d)
 * **Denys Bondarenko** - *Frontend Developer* - [denbondd](https://github.com/denbondd)
 * **Bogdan Doroshenko** - *QA* - [Doroshh](https://github.com/Doroshh)
 

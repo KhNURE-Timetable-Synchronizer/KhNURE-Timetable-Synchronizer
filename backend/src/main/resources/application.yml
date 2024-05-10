@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: KhNURE-timetable-synchronizer
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME:root}
+    password: ${DATABASE_PASSWORD:root}
+jwt:
+  signature-secret: ${JWT_SIGNATURE_SECRET:mySecret}
+schedule-api-url: 'https://api.mindenit.tech'
+
+google:
+  clientId: ${OAUTH2_GOOGLE_CLIENT-ID}
+  clientSecret: ${OAUTH2_GOOGLE_CLIENT-SECRET}
+  application:
+    name: '[Desktop] KhNURE Timetable Synchronizer'
+  redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost}
+api:
+  base-url: '/api/v1'
