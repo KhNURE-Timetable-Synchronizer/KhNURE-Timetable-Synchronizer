@@ -1,8 +1,9 @@
 package com.khnure.timetable.synchronizer.service;
 
 import com.khnure.timetable.synchronizer.model.CustomUserDetails;
-import com.khnure.timetable.synchronizer.model.User;
+import com.khnure.timetable.synchronizer.model.RefreshToken;
 import com.khnure.timetable.synchronizer.model.Role;
+import com.khnure.timetable.synchronizer.model.User;
 import com.khnure.timetable.synchronizer.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -39,6 +41,8 @@ public class UserService implements UserDetailsService {
                 .email(email)
                 .role(Role.USER)
                 .googleRefreshToken(refreshToken)
+                .jwtRefreshToken("Stub-token")
+                .jwtRefreshTokenExpiredAt(LocalDateTime.now())
                 .build();
 
         return save(user);
@@ -50,5 +54,12 @@ public class UserService implements UserDetailsService {
                 new SimpleGrantedAuthority(user.getRole().name()),
                 user)
         ).orElseThrow(() -> new UsernameNotFoundException("User not found."));
+    }
+
+    public void updateRefreshToken(Long id, RefreshToken refreshToken) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User by id not found"));
+        user.setJwtRefreshToken(refreshToken.getToken());
+        user.setJwtRefreshTokenExpiredAt(refreshToken.getExpiredAt());
+        userRepository.save(user);
     }
 }

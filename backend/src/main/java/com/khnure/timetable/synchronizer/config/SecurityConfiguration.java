@@ -6,6 +6,7 @@ import com.khnure.timetable.synchronizer.filter.JwtFilter;
 import com.khnure.timetable.synchronizer.service.JwtService;
 import com.khnure.timetable.synchronizer.service.UserService;
 import com.khnure.timetable.synchronizer.util.CalendarHelper;
+import com.khnure.timetable.synchronizer.util.CookieUtil;
 import com.khnure.timetable.synchronizer.util.GoogleCredentialHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,7 @@ public class SecurityConfiguration {
     private final CalendarHelper calendarHelper;
     private final GoogleCredentialHelper googleCredentialHelper;
     private final ObjectMapper objectMapper;
+    private final CookieUtil cookieUtil;
 
     @Bean
     @Profile("default")
@@ -52,7 +54,7 @@ public class SecurityConfiguration {
     }
 
     private JwtFilter jwtFilter() {
-        return new JwtFilter(jwtService, userService, calendarHelper, googleCredentialHelper, objectMapper);
+        return new JwtFilter(jwtService, userService, calendarHelper, googleCredentialHelper, objectMapper, cookieUtil);
     }
 
     @Bean

@@ -9,8 +9,8 @@ import com.khnure.timetable.synchronizer.service.GoogleService;
 import com.khnure.timetable.synchronizer.service.JwtService;
 import com.khnure.timetable.synchronizer.service.UserService;
 import com.khnure.timetable.synchronizer.util.CalendarHelper;
+import com.khnure.timetable.synchronizer.util.CookieUtil;
 import com.khnure.timetable.synchronizer.util.GoogleCredentialHelper;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -33,9 +33,10 @@ public class JwtController {
     private final GoogleCredentialHelper googleCredentialHelper;
     private final GoogleService googleService;
     private final ObjectMapper objectMapper;
+    private final CookieUtil cookieUtil;
 
     @PostMapping("/jwt/create")
-    public ResponseEntity<String> createJwt(@RequestBody Map<String,Object> body, HttpServletResponse response) throws JsonProcessingException {
+    public ResponseEntity<String> createJwt(@RequestBody Map<String, Object> body, HttpServletResponse response) throws JsonProcessingException {
 
         String code = (String) body.get("code");
         GoogleTokenDto googleTokenDto = googleService.getByCodeToken(code);
@@ -49,13 +50,7 @@ public class JwtController {
         }
 
         String jwt = jwtService.create(user);
-
-        Cookie cookie = new Cookie("JWT", jwt);
-        cookie.setMaxAge(3600);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setDomain(null);
-        response.addCookie(cookie);
+        response.addCookie(cookieUtil.createJwtCookie(jwt));
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)

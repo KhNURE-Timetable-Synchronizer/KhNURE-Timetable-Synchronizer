@@ -8,6 +8,10 @@ spring:
     password: sa
 jwt:
   signature-secret: ${JWT_SIGNATURE_SECRET:mySecret}
+  token:
+    expires-seconds: ${JWT_TOKEN_EXPIRES-SECONDS:3600}
+  refresh-token:
+    expires-minutes: ${JWT_REFRESH-TOKEN_EXPIRES-MINUTES:10080}
 schedule-api-url: 'https://api.mindenit.tech'
 google:
   clientId: stub
