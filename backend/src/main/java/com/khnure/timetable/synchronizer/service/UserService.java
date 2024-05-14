@@ -6,6 +6,8 @@ import com.khnure.timetable.synchronizer.model.Role;
 import com.khnure.timetable.synchronizer.model.User;
 import com.khnure.timetable.synchronizer.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -61,5 +63,10 @@ public class UserService implements UserDetailsService {
         user.setJwtRefreshToken(refreshToken.getToken());
         user.setJwtRefreshTokenExpiredAt(refreshToken.getExpiredAt());
         userRepository.save(user);
+    }
+
+    public Page<User> getUsers(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return userRepository.findAll(pageRequest);
     }
 }
