@@ -3,7 +3,7 @@ import { useAuth } from "../utils/AuthProvider"
 
 export const Route = createFileRoute("/login")({
   beforeLoad: async ({ context }) => {
-    if (context.auth.isAuthenticated) {
+    if (context.auth.user) {
       throw redirect({
         code: 403,
         to: "/",

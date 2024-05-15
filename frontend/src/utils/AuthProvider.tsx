@@ -1,6 +1,7 @@
 import { useGoogleLogin } from "@react-oauth/google"
 import Cookies from "js-cookie"
 import { createContext, useContext, useState } from "react"
+import { decodeJwt } from "jose"
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 const GOOGLE_AUTH_REDIRECT_URL = import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URL
@@ -8,8 +9,15 @@ const GOOGLE_AUTH_REDIRECT_URL = import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URL
 const loginUrl = `${BACKEND_URL}/api/v1/jwt/create`
 const cookieName = "JWT"
 
+export type AuthUser = {
+  email: string
+  exp: number
+  id: number
+  refreshToken: string
+  role: "USER" | "ADMIN"
+}
 type AuthState = {
-  isAuthenticated: boolean
+  user?: AuthUser
   login: () => void
   isLoading: boolean
   logout: () => void
@@ -27,6 +35,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     const cookie = getCookie()
     setJwt(cookie)
   }
+  const user: AuthUser | undefined = jwt ? decodeJwt(jwt) : undefined
 
   const login = useGoogleLogin({
     flow: "auth-code",
@@ -40,7 +49,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
       })
 
       if (!res.ok) {
@@ -67,9 +76,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider
-      value={{ isAuthenticated: !!jwt, login, isLoading, logout }}
-    >
+    <AuthContext.Provider value={{ user, login, isLoading, logout }}>
       {children}
     </AuthContext.Provider>
   )
