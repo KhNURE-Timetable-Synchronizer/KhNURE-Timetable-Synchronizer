@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -31,9 +33,16 @@ public class UserController {
             @RequestParam(value = "page", defaultValue = "1", required = false) @Min(value = 1, message = "Page must start from 1") Integer page,
             @RequestParam(value = "pageSize", defaultValue = "20", required = false) @Min(value = 1, message = "Users per page must be greater 0") @Max(value = 100, message = "Users per page can be max 100") Integer pageSize) {
         Page<User> userPage = userService.getUsers(page - 1, pageSize);
-        List<UserDto> response = userPage.getContent().stream()
+        List<UserDto> userDtoList = userPage.getContent().stream()
                 .map(userMapper::toDto)
                 .collect(Collectors.toList());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalUsersNumber", userPage.getTotalElements());
+        response.put("totalPageNumber", userPage.getTotalPages());
+        response.put("currentPageNumber", userPage.getNumber() + 1);
+        response.put("users", userDtoList);
+
         return ResponseEntity.ok(response);
     }
 }
