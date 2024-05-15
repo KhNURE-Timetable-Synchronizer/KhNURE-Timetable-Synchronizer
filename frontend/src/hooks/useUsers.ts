@@ -13,10 +13,19 @@ export type UsersResponse = {
 }
 
 export const usersQueryKey = ["users"]
-const fetchUsers = async () => {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/users`, {
-    credentials: "include",
-  })
+const fetchUsers = async ({
+  page,
+  pageSize,
+}: {
+  page: number
+  pageSize: number
+}) => {
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/api/v1/users?page=${page}&pageSize=${pageSize}`,
+    {
+      credentials: "include",
+    }
+  )
   if (!res.ok) {
     throw new Error("GET Users response was not ok")
   }
@@ -24,10 +33,16 @@ const fetchUsers = async () => {
   return data as UsersResponse
 }
 
-export default function useUsers() {
+export default function useUsers({
+  page,
+  usersPerPage,
+}: {
+  page: number
+  usersPerPage: number
+}) {
   const users = useQuery({
-    queryKey: usersQueryKey,
-    queryFn: fetchUsers,
+    queryKey: [...usersQueryKey, page, usersPerPage],
+    queryFn: () => fetchUsers({ page, pageSize: usersPerPage }),
   })
 
   return { users }
