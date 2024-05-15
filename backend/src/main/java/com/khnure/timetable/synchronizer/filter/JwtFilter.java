@@ -5,6 +5,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.khnure.timetable.synchronizer.exception.response.CustomErrorResponse;
 import com.khnure.timetable.synchronizer.model.CustomUserDetails;
 import com.khnure.timetable.synchronizer.model.User;
+import com.khnure.timetable.synchronizer.security.JwtAuthentication;
 import com.khnure.timetable.synchronizer.service.JwtService;
 import com.khnure.timetable.synchronizer.service.UserService;
 import com.khnure.timetable.synchronizer.util.CalendarHelper;
@@ -19,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -65,9 +65,8 @@ public class JwtFilter extends OncePerRequestFilter {
         String email = jwtService.getEmail(jwtTokenCookie.get().getValue());
         CustomUserDetails userDetails = (CustomUserDetails) userService.loadUserByUsername(email);
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, userDetails.getPassword(), userDetails.getAuthorities());
-        authenticationToken.setDetails(userDetails);
-
+        JwtAuthentication authenticationToken = new JwtAuthentication(userDetails.getAuthorities(), userDetails);
+        authenticationToken.setJwtToken(jwtTokenCookie.get().getValue());
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
@@ -98,6 +97,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 .timestamp(LocalDateTime.now())
                 .message("Server couldn't find your google refresh token. Please, reauthorize using /jwt/create endpoint.")
                 .build();
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().print(objectMapper.writeValueAsString(errorResponse));
         response.getWriter().close();
     }
@@ -110,6 +110,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 .timestamp(LocalDateTime.now())
                 .message("JWT was expired.")
                 .build();
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().print(objectMapper.writeValueAsString(errorResponse));
         response.getWriter().close();
     }
