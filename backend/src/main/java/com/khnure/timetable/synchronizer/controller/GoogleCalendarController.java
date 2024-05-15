@@ -14,6 +14,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("${api.base-url}/timetables/google")
 public class GoogleCalendarController {
+
+
     private final GoogleCalendarService googleCalendarService;
 
     @PostMapping
@@ -26,7 +28,7 @@ public class GoogleCalendarController {
     }
 
     @GetMapping
-    public ResponseEntity<List> getTimetablesByUserId(Authentication authentication){
+    public ResponseEntity<?> getTimetablesByUserId(Authentication authentication){
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getDetails();
         Long userId = userDetails.getUser().getId();
         List<GoogleCalendarDto> response = googleCalendarService.getTimetablesByUserId(userId);
