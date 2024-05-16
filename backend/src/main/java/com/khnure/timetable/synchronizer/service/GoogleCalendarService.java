@@ -10,10 +10,7 @@ import com.khnure.timetable.synchronizer.dto.TimetableExportDto;
 import com.khnure.timetable.synchronizer.exception.GoogleCalendarDeleteException;
 import com.khnure.timetable.synchronizer.exception.GoogleCalendarNotFoundException;
 import com.khnure.timetable.synchronizer.mapper.GoogleCalendarDtoMapper;
-import com.khnure.timetable.synchronizer.model.GoogleCalendar;
-import com.khnure.timetable.synchronizer.model.Group;
-import com.khnure.timetable.synchronizer.model.Pair;
-import com.khnure.timetable.synchronizer.model.Teacher;
+import com.khnure.timetable.synchronizer.model.*;
 import com.khnure.timetable.synchronizer.repository.GoogleCalendarRepository;
 import com.khnure.timetable.synchronizer.util.CalendarHelper;
 import org.springframework.http.HttpStatus;
@@ -30,13 +27,15 @@ public class GoogleCalendarService {
     private final CalendarHelper calendarHelper;
     private final NureScheduleService nureScheduleService;
     private final GoogleCalendarRepository googleCalendarRepository;
+    private final KhnureTimetablesService khnureTimetablesService;
     private final Map<String, String> pairTypeColorMap;
     private final GoogleCalendarDtoMapper googleCalendarDtoMapper;
 
-    public GoogleCalendarService(CalendarHelper calendarHelper, NureScheduleService nureScheduleService, GoogleCalendarRepository googleCalendarRepository, GoogleCalendarDtoMapper googleCalendarDtoMapper) {
+    public GoogleCalendarService(CalendarHelper calendarHelper, NureScheduleService nureScheduleService, GoogleCalendarRepository googleCalendarRepository, KhnureTimetablesService khnureTimetablesService, GoogleCalendarDtoMapper googleCalendarDtoMapper) {
         this.calendarHelper = calendarHelper;
         this.nureScheduleService = nureScheduleService;
         this.googleCalendarRepository = googleCalendarRepository;
+        this.khnureTimetablesService = khnureTimetablesService;
         this.googleCalendarDtoMapper = googleCalendarDtoMapper;
         this.pairTypeColorMap = Map.of(
                 "Лк", "5",
@@ -48,6 +47,17 @@ public class GoogleCalendarService {
         );
     }
 
+    public GoogleCalendar saveGoogleCalendar(Long userId,
+                                             com.google.api.services.calendar.model.Calendar createdCalendar,
+                                             KhnureTimetables khnureTimetables){
+        return googleCalendarRepository.save(GoogleCalendar.builder()
+                .calendarId(createdCalendar.getId())
+                .userId(userId)
+                .khnureTimetables(khnureTimetables)
+                .build());
+    }
+
+
     public void export(Long userId, TimetableExportDto timetableExportDto) {
         String timetableName = nureScheduleService.getScheduleNameByIdAndType(timetableExportDto.getTimetableId(), timetableExportDto.getTypeScheduleDto());
 
@@ -57,14 +67,11 @@ public class GoogleCalendarService {
             var newCalendar = new com.google.api.services.calendar.model.Calendar()
                     .setSummary(timetableName)
                     .setTimeZone("Europe/Kiev");
+
             var createdCalendar = calendar.calendars().insert(newCalendar).execute();
 
-            googleCalendarRepository.save(GoogleCalendar.builder()
-                    .name(timetableName)
-                    .calendarId(createdCalendar.getId())
-                    .userId(userId)
-                    .build());
-
+            KhnureTimetables khnureTimetables = khnureTimetablesService.addKhnureTimetable(timetableName, timetableExportDto.getTimetableId()).get();
+            saveGoogleCalendar(userId,createdCalendar, khnureTimetables);
 
             List<Pair> pairs = nureScheduleService.getSchedule(timetableExportDto);
             for (Pair pair : pairs) {
