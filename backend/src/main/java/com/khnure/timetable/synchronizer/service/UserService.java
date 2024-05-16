@@ -53,7 +53,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return findByEmail(username).map(user -> new CustomUserDetails(
-                new SimpleGrantedAuthority(user.getRole().name()),
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().name()),
                 user)
         ).orElseThrow(() -> new UsernameNotFoundException("User not found."));
     }

@@ -48,6 +48,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(urlConfig -> {
                     urlConfig.requestMatchers(apiVersionPath + "/jwt/create").permitAll()
                             .requestMatchers(WHITE_LIST_URL).permitAll()
+                            .requestMatchers(apiVersionPath + "/users").hasRole("ADMIN")
                             .anyRequest().authenticated();
                 })
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
