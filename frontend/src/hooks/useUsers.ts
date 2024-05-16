@@ -1,4 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
+import { useAuth } from "../utils/AuthProvider"
+import { fetchAndHandleData } from "../utils/fetchData"
 
 export type User = {
   id: number
@@ -16,21 +18,17 @@ export const usersQueryKey = ["users"]
 const fetchUsers = async ({
   page,
   pageSize,
+  onUnauthorized,
 }: {
   page: number
   pageSize: number
+  onUnauthorized: () => void
 }) => {
-  const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/v1/users?page=${page}&pageSize=${pageSize}`,
-    {
-      credentials: "include",
-    }
+  return fetchAndHandleData<UsersResponse>(
+    "GET Users",
+    onUnauthorized,
+    `${import.meta.env.VITE_BACKEND_URL}/api/v1/users?page=${page}&pageSize=${pageSize}`
   )
-  if (!res.ok) {
-    throw new Error("GET Users response was not ok")
-  }
-  const data = await res.json()
-  return data as UsersResponse
 }
 
 export default function useUsers({
@@ -40,9 +38,11 @@ export default function useUsers({
   page: number
   usersPerPage: number
 }) {
+  const { logout } = useAuth()
   const users = useQuery({
     queryKey: [...usersQueryKey, page, usersPerPage],
-    queryFn: () => fetchUsers({ page, pageSize: usersPerPage }),
+    queryFn: () =>
+      fetchUsers({ page, pageSize: usersPerPage, onUnauthorized: logout }),
   })
 
   return { users }
