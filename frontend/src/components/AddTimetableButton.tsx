@@ -36,7 +36,7 @@ export default function AddTimetableButton() {
   }
 
   const isTimetableAdded = (timetable: Timetable) =>
-    personalTimetables.data?.find(t => t.name === timetable.name)
+    personalTimetables.data?.find(t => t.khnureTimetableId === timetable.id)
 
   const openChooseModal = () =>
     (document.getElementById("add_timetable_modal_choose") as any).showModal()
