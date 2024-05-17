@@ -1,5 +1,5 @@
 -- liquibase formatted sql
--- changeset change-user-calendar-add-khnure_timetables:1
+-- changeset change-google_calendars-add-khnure_timetables:1
 
 
 CREATE TABLE khnure_timetables
@@ -9,6 +9,8 @@ CREATE TABLE khnure_timetables
     khnure_timetable_id VARCHAR(160) NOT NULL,
     PRIMARY KEY (id)
 );
+
+TRUNCATE TABLE google_calendars;
 
 ALTER TABLE google_calendars
 DROP COLUMN name;
