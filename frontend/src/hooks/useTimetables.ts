@@ -7,6 +7,7 @@ export type PersonalTimetable = {
   id: number
   name: string
   googleCalendarId: string
+  khnureTimetableId: number
 }
 
 export const personalTimetablesQueryKey = ["personalTimetables"]
