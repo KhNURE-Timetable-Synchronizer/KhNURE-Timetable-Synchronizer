@@ -56,9 +56,12 @@ export const Route = createRootRouteWithContext<RootRouterContext>()({
             )}
           </div>
           {user && (
-            <Link to="/login" className="btn btn-sm" onClick={logout}>
-              Logout
-            </Link>
+            <div className="flex gap-2 items-center">
+              <p className="text-xs sm:text-sm">{user.email}</p>
+              <Link to="/login" className="btn btn-sm" onClick={logout}>
+                Logout
+              </Link>
+            </div>
           )}
         </div>
         <hr className="mb-2" />
