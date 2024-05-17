@@ -21,7 +21,6 @@ public class GoogleCalendarController {
     @PostMapping
     public ResponseEntity<?> export(@RequestBody TimetableExportDto timetableExportDto, Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getDetails();
-
         googleCalendarService.export(userDetails.getUser().getId(), timetableExportDto);
 
         return ResponseEntity.ok().build();
