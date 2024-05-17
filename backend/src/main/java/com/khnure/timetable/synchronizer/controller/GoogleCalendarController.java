@@ -5,6 +5,7 @@ import com.khnure.timetable.synchronizer.dto.TimetableExportDto;
 import com.khnure.timetable.synchronizer.model.CustomUserDetails;
 import com.khnure.timetable.synchronizer.service.GoogleCalendarService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.base-url}/timetables/google")
+@RequestMapping(value = "${api.base-url}/timetables/google", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GoogleCalendarController {
 
 
@@ -23,7 +24,7 @@ public class GoogleCalendarController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getDetails();
         googleCalendarService.export(userDetails.getUser().getId(), timetableExportDto);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("{}");
     }
 
     @GetMapping
