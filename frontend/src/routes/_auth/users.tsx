@@ -54,7 +54,7 @@ function Users() {
         <p>Users per page:</p>
         <input
           type="number"
-          min={2}
+          min={1}
           max={100}
           value={input}
           className="input input-bordered input-sm"
