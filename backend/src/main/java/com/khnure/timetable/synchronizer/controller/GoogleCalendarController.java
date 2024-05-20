@@ -41,6 +41,6 @@ public class GoogleCalendarController {
         Long userId = userDetails.getUser().getId();
         googleCalendarService.deleteCalendarByIdAndUserId(id, userId);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("{}");
     }
 }
