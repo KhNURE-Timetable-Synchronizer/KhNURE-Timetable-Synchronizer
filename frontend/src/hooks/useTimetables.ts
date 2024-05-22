@@ -59,7 +59,10 @@ export default function useTimetables() {
         },
         credentials: "include",
       }
-    )
+    ).catch((error) => {
+      console.error(error)
+      alert("Failed to add timetable")
+    })
   }
 
   const deleteTimetable = async (id: number) => {
