@@ -13,6 +13,8 @@ export default function AddTimetableButton() {
   )
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    if (!timetable) return
+
     setIsLoading(true)
     e.preventDefault()
     const form = e.currentTarget as HTMLFormElement
@@ -20,7 +22,12 @@ export default function AddTimetableButton() {
     const startDate = formData.get("start_date") as string
     const endDate = formData.get("end_date") as string
 
-    if (!timetable) return
+    if (startDate > endDate) {
+      alert("End date should be after start date")
+      setIsLoading(false)
+      return
+    }
+
     await addTimetable({
       timetableId: timetable.id,
       timetableType: timetable.type,
