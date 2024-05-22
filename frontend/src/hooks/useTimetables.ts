@@ -74,7 +74,10 @@ export default function useTimetables() {
         method: "DELETE",
         credentials: "include",
       }
-    )
+    ).catch((error) => {
+      console.error(error)
+      alert("Failed to delete timetable")
+    })
   }
 
   return {
