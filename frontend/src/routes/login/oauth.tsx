@@ -4,7 +4,8 @@ import { z } from "zod"
 import { useAuth } from "../../utils/AuthProvider"
 
 const searchParamsSchema = z.object({
-  code: z.string(),
+  code: z.string().optional(),
+  error: z.string().optional(),
 })
 
 export const Route = createFileRoute("/login/oauth")({
@@ -17,7 +18,7 @@ function OAuth() {
   const { isLoading, loginProceedCode } = useAuth()
 
   useEffect(() => {
-    loginProceedCode({ code: searchParams.code })
+    loginProceedCode({ code: searchParams.code, error: searchParams.error })
   }, [])
 
   return (

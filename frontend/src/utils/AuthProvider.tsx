@@ -17,7 +17,7 @@ export type AuthUser = {
 type AuthState = {
   user?: AuthUser
   login: () => void
-  loginProceedCode: (params: { code: string }) => void
+  loginProceedCode: (params: { code: string, error: string }) => void
   isLoading: boolean
   logout: () => void
 }
@@ -38,12 +38,16 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = () => {
     setIsLoading(true)
-    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=240421397087-jucg36d0qgmvcgc3tnqska5ne2vi9cld.apps.googleusercontent.com&scope=email%20profile%20openid%20https://www.googleapis.com/auth/calendar%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/calendar.events%20https://www.googleapis.com/auth/userinfo.profile&redirect_uri=${window.location.origin}/login/oauth&prompt=select_account&access_type=offline&response_type=code`
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=240421397087-jucg36d0qgmvcgc3tnqska5ne2vi9cld.apps.googleusercontent.com&scope=email%20profile%20openid%20https://www.googleapis.com/auth/calendar%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/calendar.events%20https://www.googleapis.com/auth/userinfo.profile&redirect_uri=${window.location.origin}/login/oauth&prompt=none&access_type=offline&response_type=code`
   }
 
-  const loginProceedCode = async (params: { code: string }) => {
+  const loginProceedCode = async (params: { code: string, error: string }) => {
     if (isLoading) return
     setIsLoading(true)
+    if (params.error === "interaction_required"){
+      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=240421397087-jucg36d0qgmvcgc3tnqska5ne2vi9cld.apps.googleusercontent.com&scope=email%20profile%20openid%20https://www.googleapis.com/auth/calendar%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/calendar.events%20https://www.googleapis.com/auth/userinfo.profile&redirect_uri=${window.location.origin}/login/oauth&prompt=select_account&access_type=offline&response_type=code`
+      return;
+    }
     try {
       const res = await fetch(loginUrl, {
         method: "POST",
