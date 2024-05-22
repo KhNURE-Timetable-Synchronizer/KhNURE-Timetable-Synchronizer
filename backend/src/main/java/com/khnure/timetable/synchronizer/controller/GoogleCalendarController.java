@@ -4,10 +4,13 @@ import com.khnure.timetable.synchronizer.dto.GoogleCalendarDto;
 import com.khnure.timetable.synchronizer.dto.TimetableExportDto;
 import com.khnure.timetable.synchronizer.model.CustomUserDetails;
 import com.khnure.timetable.synchronizer.service.GoogleCalendarService;
+import com.khnure.timetable.synchronizer.validator.impl.TimetableExportDtoDateStartEndRangeValidator;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,9 +21,15 @@ public class GoogleCalendarController {
 
 
     private final GoogleCalendarService googleCalendarService;
+    private final TimetableExportDtoDateStartEndRangeValidator timetableExportDtoDateStartEndRangeValidator;
+
+    @InitBinder("timetableExportDto")
+    public void initBinder(WebDataBinder binder) {
+        binder.addValidators(timetableExportDtoDateStartEndRangeValidator);
+    }
 
     @PostMapping
-    public ResponseEntity<?> export(@RequestBody TimetableExportDto timetableExportDto, Authentication authentication) {
+    public ResponseEntity<?> export(@Valid @RequestBody TimetableExportDto timetableExportDto, Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getDetails();
         googleCalendarService.export(userDetails.getUser().getId(), timetableExportDto);
 
