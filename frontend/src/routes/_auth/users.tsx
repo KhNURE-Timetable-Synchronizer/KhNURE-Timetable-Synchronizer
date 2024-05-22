@@ -42,11 +42,22 @@ function Users() {
     const handler = setTimeout(() => {
       const newPerPage = input < 0 ? 1 : input > 100 ? 100 : input
       setInput(newPerPage)
-      navigate({ search: { page, usersPerPage: newPerPage }, replace: true })
+      navigate({
+        search: {
+          page: users.data!.totalUsersNumber / newPerPage < page ? 1 : page,
+          usersPerPage: newPerPage,
+        },
+        replace: true,
+      })
     }, 1000)
 
     return () => clearTimeout(handler)
   }, [input])
+
+  const pages = formatPages({
+    currentPage: page,
+    totalPages: users.data?.totalPageNumber,
+  })
 
   return (
     <div className="space-y-4">
@@ -81,23 +92,64 @@ function Users() {
       </table>
       <div className="flex justify-center">
         <div className="join">
-          {Array.from({ length: users.data?.totalPageNumber || 0 }).map(
-            (_, i) => {
-              return (
-                <Link
-                  key={i}
-                  search={{ page: i + 1, usersPerPage }}
-                  className={
-                    "join-item btn" + (page === i + 1 ? " btn-active" : "")
-                  }
-                >
-                  {i + 1}
-                </Link>
-              )
-            }
-          )}
+          {pages.map(({ label, value }) => {
+            return (
+              <Link
+                key={label}
+                search={{ page: value, usersPerPage }}
+                className={
+                  "join-item btn" +
+                  (value === undefined ? " btn-disabled" : "") +
+                  (value === page ? " btn-primary" : "")
+                }
+                disabled={value === page}
+              >
+                {label}
+              </Link>
+            )
+          })}
         </div>
       </div>
     </div>
   )
+}
+
+const formatPages = ({
+  currentPage,
+  totalPages,
+}: {
+  currentPage: number
+  totalPages?: number
+}) => {
+  if (!totalPages) return []
+  if (totalPages <= 6)
+    return Array.from({ length: totalPages }).map((_, i) => ({
+      label: i + 1,
+      value: i + 1,
+    }))
+
+  return [
+    { label: "<", value: currentPage === 1 ? undefined : currentPage - 1 },
+    ...(currentPage < 3 ? [] : [{ label: 1, value: 1 }, { label: "..." }]),
+    ...(currentPage < 3 ? [1, 2, 3].map(i => ({ label: i, value: i })) : []),
+    ...(currentPage >= 3 && currentPage <= totalPages - 2
+      ? [currentPage - 1, currentPage, currentPage + 1].map(i => ({
+          label: i,
+          value: i,
+        }))
+      : []),
+    ...(currentPage > totalPages - 2
+      ? [totalPages - 2, totalPages - 1, totalPages].map(i => ({
+          label: i,
+          value: i,
+        }))
+      : []),
+    ...(totalPages - currentPage < 2
+      ? []
+      : [{ label: "..." }, { label: totalPages, value: totalPages }]),
+    {
+      label: ">",
+      value: currentPage === totalPages ? undefined : currentPage + 1,
+    },
+  ]
 }
