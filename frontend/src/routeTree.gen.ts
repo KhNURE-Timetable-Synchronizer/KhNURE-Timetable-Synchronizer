@@ -11,26 +11,32 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LoginImport } from './routes/login'
 import { Route as AuthImport } from './routes/_auth'
+import { Route as LoginIndexImport } from './routes/login/index'
 import { Route as AuthIndexImport } from './routes/_auth/index'
+import { Route as LoginOauthImport } from './routes/login/oauth'
 import { Route as AuthUsersImport } from './routes/_auth/users'
 
 // Create/Update Routes
-
-const LoginRoute = LoginImport.update({
-  path: '/login',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const AuthRoute = AuthImport.update({
   id: '/_auth',
   getParentRoute: () => rootRoute,
 } as any)
 
+const LoginIndexRoute = LoginIndexImport.update({
+  path: '/login/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const AuthIndexRoute = AuthIndexImport.update({
   path: '/',
   getParentRoute: () => AuthRoute,
+} as any)
+
+const LoginOauthRoute = LoginOauthImport.update({
+  path: '/login/oauth',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const AuthUsersRoute = AuthUsersImport.update({
@@ -46,17 +52,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthImport
       parentRoute: typeof rootRoute
     }
-    '/login': {
-      preLoaderRoute: typeof LoginImport
-      parentRoute: typeof rootRoute
-    }
     '/_auth/users': {
       preLoaderRoute: typeof AuthUsersImport
       parentRoute: typeof AuthImport
     }
+    '/login/oauth': {
+      preLoaderRoute: typeof LoginOauthImport
+      parentRoute: typeof rootRoute
+    }
     '/_auth/': {
       preLoaderRoute: typeof AuthIndexImport
       parentRoute: typeof AuthImport
+    }
+    '/login/': {
+      preLoaderRoute: typeof LoginIndexImport
+      parentRoute: typeof rootRoute
     }
   }
 }
@@ -65,7 +75,8 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   AuthRoute.addChildren([AuthUsersRoute, AuthIndexRoute]),
-  LoginRoute,
+  LoginOauthRoute,
+  LoginIndexRoute,
 ])
 
 /* prettier-ignore-end */
