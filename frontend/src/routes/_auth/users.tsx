@@ -92,10 +92,10 @@ function Users() {
       </table>
       <div className="flex justify-center">
         <div className="join">
-          {pages.map(({ label, value }) => {
+          {pages.map(({ label, value, key }) => {
             return (
               <Link
-                key={label}
+                key={key}
                 search={{ page: value, usersPerPage }}
                 className={
                   "join-item btn" +
@@ -116,40 +116,71 @@ function Users() {
 
 const formatPages = ({
   currentPage,
-  totalPages,
+  totalPages = 1,
 }: {
   currentPage: number
   totalPages?: number
-}) => {
-  if (!totalPages) return []
-  if (totalPages <= 6)
-    return Array.from({ length: totalPages }).map((_, i) => ({
-      label: i + 1,
-      value: i + 1,
-    }))
+}): { label: string | number; value?: number; key: string | number }[] => {
+  let pages: {
+    label: string | number
+    value?: number
+    key: string | number
+  }[] = []
 
-  return [
-    { label: "<", value: currentPage === 1 ? undefined : currentPage - 1 },
-    ...(currentPage < 3 ? [] : [{ label: 1, value: 1 }, { label: "..." }]),
-    ...(currentPage < 3 ? [1, 2, 3].map(i => ({ label: i, value: i })) : []),
-    ...(currentPage >= 3 && currentPage <= totalPages - 2
-      ? [currentPage - 1, currentPage, currentPage + 1].map(i => ({
-          label: i,
-          value: i,
-        }))
-      : []),
-    ...(currentPage > totalPages - 2
-      ? [totalPages - 2, totalPages - 1, totalPages].map(i => ({
-          label: i,
-          value: i,
-        }))
-      : []),
-    ...(totalPages - currentPage < 2
-      ? []
-      : [{ label: "..." }, { label: totalPages, value: totalPages }]),
+  if (totalPages <= 6) {
+    pages = Array(totalPages)
+      .fill(null)
+      .map((_, index) => ({
+        label: index + 1,
+        value: index + 1,
+        key: index + 1,
+      }))
+  } else if (currentPage <= 3) {
+    pages = [
+      ...Array.from({ length: 4 }, (_, i) => ({
+        label: i + 1,
+        value: i + 1,
+        key: i + 1,
+      })),
+      { label: "...", value: undefined, key: "first..." },
+      { label: totalPages, value: totalPages, key: totalPages },
+    ]
+  } else if (currentPage > 3 && currentPage < totalPages - 2) {
+    pages = [
+      { label: 1, value: 1, key: 1 },
+      { label: "...", value: undefined, key: "first..." },
+      { label: currentPage - 1, value: currentPage - 1, key: currentPage - 1 },
+      { label: currentPage, value: currentPage, key: currentPage },
+      { label: currentPage + 1, value: currentPage + 1, key: currentPage + 1 },
+      { label: "...", value: undefined, key: "last..." },
+      { label: totalPages, value: totalPages, key: totalPages },
+    ]
+  } else {
+    pages = [
+      { label: 1, value: 1, key: 1 },
+      { label: "...", value: undefined, key: "first..." },
+      ...Array.from({ length: 4 }, (_, i) => ({
+        label: totalPages - 3 + i,
+        value: totalPages - 3 + i,
+        key: totalPages - 3 + i,
+      })),
+    ]
+  }
+
+  // Add "<" and ">" pages
+  pages = [
+    {
+      label: "<",
+      value: currentPage > 1 ? currentPage - 1 : undefined,
+      key: "prev",
+    },
+    ...pages,
     {
       label: ">",
-      value: currentPage === totalPages ? undefined : currentPage + 1,
+      value: currentPage < totalPages ? currentPage + 1 : undefined,
+      key: "next",
     },
   ]
+
+  return pages
 }
