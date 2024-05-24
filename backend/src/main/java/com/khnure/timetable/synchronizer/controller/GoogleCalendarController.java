@@ -4,29 +4,40 @@ import com.khnure.timetable.synchronizer.dto.GoogleCalendarDto;
 import com.khnure.timetable.synchronizer.dto.TimetableExportDto;
 import com.khnure.timetable.synchronizer.model.CustomUserDetails;
 import com.khnure.timetable.synchronizer.service.GoogleCalendarService;
+import com.khnure.timetable.synchronizer.validator.impl.TimetableExportDtoDateStartEndRangeValidator;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.base-url}/timetables/google")
+@RequestMapping(value = "${api.base-url}/timetables/google", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GoogleCalendarController {
+
+
     private final GoogleCalendarService googleCalendarService;
+    private final TimetableExportDtoDateStartEndRangeValidator timetableExportDtoDateStartEndRangeValidator;
+
+    @InitBinder("timetableExportDto")
+    public void initBinder(WebDataBinder binder) {
+        binder.addValidators(timetableExportDtoDateStartEndRangeValidator);
+    }
 
     @PostMapping
-    public ResponseEntity<?> export(@RequestBody TimetableExportDto timetableExportDto, Authentication authentication) {
+    public ResponseEntity<?> export(@Valid @RequestBody TimetableExportDto timetableExportDto, Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getDetails();
-
         googleCalendarService.export(userDetails.getUser().getId(), timetableExportDto);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("{}");
     }
 
     @GetMapping
-    public ResponseEntity<List> getTimetablesByUserId(Authentication authentication){
+    public ResponseEntity<?> getTimetablesByUserId(Authentication authentication){
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getDetails();
         Long userId = userDetails.getUser().getId();
         List<GoogleCalendarDto> response = googleCalendarService.getTimetablesByUserId(userId);
@@ -39,6 +50,6 @@ public class GoogleCalendarController {
         Long userId = userDetails.getUser().getId();
         googleCalendarService.deleteCalendarByIdAndUserId(id, userId);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("{}");
     }
 }

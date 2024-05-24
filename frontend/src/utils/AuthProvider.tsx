@@ -1,16 +1,23 @@
-import { useGoogleLogin } from "@react-oauth/google"
 import Cookies from "js-cookie"
 import { createContext, useContext, useState } from "react"
+import { decodeJwt } from "jose"
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
-const GOOGLE_AUTH_REDIRECT_URL = import.meta.env.VITE_GOOGLE_AUTH_REDIRECT_URL
 
 const loginUrl = `${BACKEND_URL}/api/v1/jwt/create`
 const cookieName = "JWT"
 
+export type AuthUser = {
+  email: string
+  exp: number
+  id: number
+  refreshToken: string
+  role: "USER" | "ADMIN"
+}
 type AuthState = {
-  isAuthenticated: boolean
+  user?: AuthUser
   login: () => void
+  loginProceedCode: (params: { code?: string; error?: string }) => void
   isLoading: boolean
   logout: () => void
 }
@@ -27,38 +34,45 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     const cookie = getCookie()
     setJwt(cookie)
   }
+  const user: AuthUser | undefined = jwt ? decodeJwt(jwt) : undefined
 
-  const login = useGoogleLogin({
-    flow: "auth-code",
-    redirect_uri: GOOGLE_AUTH_REDIRECT_URL,
-    onSuccess: async credentialResponse => {
-      setIsLoading(true)
+  const login = () => {
+    setIsLoading(true)
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=240421397087-jucg36d0qgmvcgc3tnqska5ne2vi9cld.apps.googleusercontent.com&scope=email%20profile%20openid%20https://www.googleapis.com/auth/calendar%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/calendar.events%20https://www.googleapis.com/auth/userinfo.profile&redirect_uri=${window.location.origin}/login/oauth&prompt=none&access_type=offline&response_type=code`
+  }
 
+  const loginProceedCode = async (params: {
+    code?: string
+    error?: string
+  }) => {
+    if (isLoading) return
+    setIsLoading(true)
+    if (params.error === "interaction_required") {
+      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=240421397087-jucg36d0qgmvcgc3tnqska5ne2vi9cld.apps.googleusercontent.com&scope=email%20profile%20openid%20https://www.googleapis.com/auth/calendar%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/calendar.events%20https://www.googleapis.com/auth/userinfo.profile&redirect_uri=${window.location.origin}/login/oauth&prompt=select_account&access_type=offline&response_type=code`
+      return
+    }
+    try {
       const res = await fetch(loginUrl, {
         method: "POST",
-        body: JSON.stringify(credentialResponse),
+        body: JSON.stringify(params),
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
       })
-
-      if (!res.ok) {
-        console.error("Login Failed Backend")
-        setIsLoading(false)
-        throw new Error("Login Failed Backend")
-      }
-
-      refreshAuthCookie()
+      if (!res.ok) throw new Error("Login Failed Backend")
+    } catch (err) {
+      alert("Login Failed Backend")
+      window.location.pathname = "/login"
+      throw new Error("Login Failed Backend")
+    } finally {
       setIsLoading(false)
-      window.location.reload()
-    },
-    onError: () => {
-      console.error("Login Failed Google OAuth")
-    },
-    scope:
-      "openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events",
-  })
+    }
+
+    refreshAuthCookie()
+    setIsLoading(false)
+    window.location.href = "/"
+  }
 
   const logout = () => {
     Cookies.remove(cookieName)
@@ -68,7 +82,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated: !!jwt, login, isLoading, logout }}
+      value={{ user, login, loginProceedCode, isLoading, logout }}
     >
       {children}
     </AuthContext.Provider>

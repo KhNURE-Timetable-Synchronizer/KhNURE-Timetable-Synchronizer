@@ -7,25 +7,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "google_calendars")
+@Table(name = "khnure_timetables")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GoogleCalendar {
-
+public class KhnureTimetables {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "khnure_timetables_id")
-    private KhnureTimetables khnureTimetables;
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "calendar_id")
-    private String calendarId;
-
-    @Column(name = "users_id")
-    private Long userId;
+    @Column(name = "khnure_timetable_id")
+    private Long khnureTimetableId;
 }

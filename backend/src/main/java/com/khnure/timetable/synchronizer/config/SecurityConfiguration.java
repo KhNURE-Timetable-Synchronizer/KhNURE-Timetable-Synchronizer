@@ -6,15 +6,18 @@ import com.khnure.timetable.synchronizer.filter.JwtFilter;
 import com.khnure.timetable.synchronizer.service.JwtService;
 import com.khnure.timetable.synchronizer.service.UserService;
 import com.khnure.timetable.synchronizer.util.CalendarHelper;
+import com.khnure.timetable.synchronizer.util.CookieUtil;
 import com.khnure.timetable.synchronizer.util.GoogleCredentialHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -25,6 +28,7 @@ import java.util.Arrays;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfiguration {
+    private static final String[] WHITE_LIST_URL = { "/auth/**", "/error", "/account"};
     @Value("${api.base-url}")
     private String apiVersionPath;
 
@@ -33,6 +37,7 @@ public class SecurityConfiguration {
     private final CalendarHelper calendarHelper;
     private final GoogleCredentialHelper googleCredentialHelper;
     private final ObjectMapper objectMapper;
+    private final CookieUtil cookieUtil;
 
     @Bean
     @Profile("default")
@@ -42,9 +47,14 @@ public class SecurityConfiguration {
                 .cors().and()
                 .authorizeHttpRequests(urlConfig -> {
                     urlConfig.requestMatchers(apiVersionPath + "/jwt/create").permitAll()
+                            .requestMatchers(WHITE_LIST_URL).permitAll()
+                            .requestMatchers(apiVersionPath + "/users").hasRole("ADMIN")
                             .anyRequest().authenticated();
                 })
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(config-> config.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .formLogin().disable()
+                .httpBasic().disable()
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
 
@@ -52,7 +62,7 @@ public class SecurityConfiguration {
     }
 
     private JwtFilter jwtFilter() {
-        return new JwtFilter(jwtService, userService, calendarHelper, googleCredentialHelper, objectMapper);
+        return new JwtFilter(jwtService, userService, calendarHelper, googleCredentialHelper, objectMapper, cookieUtil);
     }
 
     @Bean

@@ -5,3 +5,7 @@ databaseChangeLog:
       file: db/changelog/v1.0-user-calendar.sql
   - include:
       file: db/changelog/v1.1-add-google-refresh-token.sql
+  - include:
+      file: db/changelog/v1.2-add-jwt-refresh-token.sql
+  - include:
+      file: db/changelog/v1.3-change-google_calendars-add-khnure_timetables.sql

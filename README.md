@@ -7,16 +7,18 @@ from "[Kharkiv National University of Radio Electronics][1]" with Google Calenda
 
 ## What is the purpose of this project?
 
-The **purpose** of the project is ***implementing a wep-application for synchronizing educational timetable with Google Calendar***.
+The **purpose** of the project is
+***implementing a wep-application for synchronizing educational timetable with Google Calendar***.
 In the web-application you need to sign in with your Google account, give permission of editing your Google Calendar for
 app, choose your schedule for adding in Google Calendar and press buttons for synchronization.
 
 ## Getting Started
 
-For running the app you need to download the latest version from the **main** branch 
+For running the app you need to download the latest version from the **main** branch
 
 [//]: # (and configure the web-server &#40;*if it's needed*&#41;, the database and connection to it. )
 Follow the next chapters.
+
 ### Installation Instruction
 
 #### How to download project on my local machine?
@@ -31,7 +33,7 @@ For downloading the project locally you can use two variants:
     2. Find the button `Download ZIP` and press it. The downloading must start.
     3. Unzip the archive in soe directory and run the IDEA in this directory.
 
-    Project has been installed.
+   Project has been installed.
 
 
 2. Use the `Git` for downloading the repository locally.
@@ -45,7 +47,7 @@ For downloading the project locally you can use two variants:
     2. Create an empty directory and initialize it as git repository. Use the next
        command - `git init`.
     3. Adds this repository to yours with name `origin` (you can change it, if you want):
-   
+
        ```
        $ git remote add origin git@github.com:StasonMendelso/KhNURE-Timetable-Synchronizer.git
        ```
@@ -71,36 +73,59 @@ For downloading the project locally you can use two variants:
        changes are observed by the `git` and you can always make a rollback of
        all changes `git reset --hard`.
 
-[//]: # (### What things you need to install the software and how to configure them?)
+### What things you need to install the software and how to configure them?
 
-[//]: # ()
-[//]: # ()
-[//]: # (##### Server configuration)
+### Run manually
 
-[//]: # ()
-[//]: # (For running the code you needn't install server and configure it, because the Spring Boot starter)
+##### Backend Server configuration
 
-[//]: # (makes it instead of you using the pom.xml.)
+For running the code you needn't install server and configure it, because the Spring Boot starter
+makes it instead of you. Only what you need to do is passing correct environment variables. Environment variables for
+can be found [here](backend/.env.example).
 
-[//]: # ()
-[//]: # (### Running the web-applcation)
+For running the app on the server you need only run the main method in Java class. Also, you can
+package app to the jar/war file and deploy the file on the server manually.
 
-[//]: # ()
-[//]: # ()
-[//]: # (You can find an empty [application configuration file]&#40;src/main/resources/application.yaml.origin&#41;,)
+##### Frontend Server configuration
 
-[//]: # (which must be renamed to "*application.properties*" instead of "*application.properties.origin*". This file)
+For running the code you need install NPM, Node. Then run next command
+`npm install`. Also, you need to do is passing correct environment variables. Environment variables for can be
+found [here](frontend/.env.example) and then run `npm run dev`.
 
-[//]: # (contains only keys for configuration the application using the Spring Boot, so you can put your values to the file and)
+##### Database configuration
 
-[//]: # (run application with this application configuration. You can find more about configuration of Spring Boot application on)
+You can use any relational database, but it's recommended to use a MySQL Server 8.0.31. Download and configure it.
+Create a new schema with name 'timetable'. Then pass credentials to the database to environment variables to the backend
+server.
 
-[//]: # (the Internet.)
+### Run using a Docker
 
-[//]: # ()
-[//]: # (For running the app on the server you need only run the main method in Java class. Also, you can)
+You can find a file [compose.yaml](compose.yaml) for building containers for the whole app.
+For running an application you need to use a docker-compose command for build and run application. Also, you need to
+pass environment variables. As there are a lot of variables, we use a .env file. This file you can get almost in anyone
+of the team. Ask it someone and he send your a file. The file can be put in repository or in the directory above.
 
-[//]: # (package app to the jar/war file and deploy the file on the server manually.)
+Let’s imagine, that our repository is in /root/repository and [.env file](.env.example) in /root/repository directories.
+For running an
+application, you need to start a docker, then build images by the following command (terminal opens in /root/repository
+directory):
+
+```
+docker-compose build
+```
+
+After successfully building containers you can run them. For it use the next command:
+
+```
+docker-compose --env-file .env.dev up
+```
+
+.env.dev - is a file with environment variables. If yo put a file in another location - change a path to it.
+
+After running you need to wait a few minutes. You can see the next in the console:
+
+![img.png](readme/img.png)
+
 
 ## Built With
 
@@ -108,8 +133,10 @@ For downloading the project locally you can use two variants:
 
 ## Authors
 
-* **Stanislav Hlova** - *Backend Developer* - [StasonMendelso](https://github.com/StasonMendelso)  [![wakatime](https://wakatime.com/badge/user/b33e0124-90c1-44a9-95a8-0f09b324ad70/project/018e85b7-9a4a-4fae-acf9-9ebf4d12c6cd.svg)](https://wakatime.com/badge/user/b33e0124-90c1-44a9-95a8-0f09b324ad70/project/018e85b7-9a4a-4fae-acf9-9ebf4d12c6cd)
-* **Dmytro Kuzmenko** - *Backend Developer* - [Mourgarth](https://github.com/Mourgarth)  [![wakatime](https://wakatime.com/badge/user/018eba51-f183-462e-bf52-7d1232edb5d0/project/018f0142-cd24-46b3-9cdd-b700d9f7453d.svg)](https://wakatime.com/badge/user/018eba51-f183-462e-bf52-7d1232edb5d0/project/018f0142-cd24-46b3-9cdd-b700d9f7453d)
+* **Stanislav Hlova** - *Backend
+  Developer* - [StasonMendelso](https://github.com/StasonMendelso)  [![wakatime](https://wakatime.com/badge/user/b33e0124-90c1-44a9-95a8-0f09b324ad70/project/018e85b7-9a4a-4fae-acf9-9ebf4d12c6cd.svg)](https://wakatime.com/badge/user/b33e0124-90c1-44a9-95a8-0f09b324ad70/project/018e85b7-9a4a-4fae-acf9-9ebf4d12c6cd)
+* **Dmytro Kuzmenko** - *Backend
+  Developer* - [Mourgarth](https://github.com/Mourgarth)  [![wakatime](https://wakatime.com/badge/user/018eba51-f183-462e-bf52-7d1232edb5d0/project/018f0142-cd24-46b3-9cdd-b700d9f7453d.svg)](https://wakatime.com/badge/user/018eba51-f183-462e-bf52-7d1232edb5d0/project/018f0142-cd24-46b3-9cdd-b700d9f7453d)
 * **Denys Bondarenko** - *Frontend Developer* - [denbondd](https://github.com/denbondd)
 * **Bogdan Doroshenko** - *QA* - [Doroshh](https://github.com/Doroshh)
 
@@ -124,4 +151,5 @@ For downloading the project locally you can use two variants:
 [7]:https://docs.github.com/en/authentication/connecting-to-github-with-ssh
 
 ## License
+
 The source code in this repository is made available under the [MIT License](/LICENSE).

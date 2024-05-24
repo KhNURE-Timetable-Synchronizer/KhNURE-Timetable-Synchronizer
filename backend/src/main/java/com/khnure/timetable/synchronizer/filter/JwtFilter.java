@@ -5,9 +5,11 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.khnure.timetable.synchronizer.exception.response.CustomErrorResponse;
 import com.khnure.timetable.synchronizer.model.CustomUserDetails;
 import com.khnure.timetable.synchronizer.model.User;
+import com.khnure.timetable.synchronizer.security.JwtAuthentication;
 import com.khnure.timetable.synchronizer.service.JwtService;
 import com.khnure.timetable.synchronizer.service.UserService;
 import com.khnure.timetable.synchronizer.util.CalendarHelper;
+import com.khnure.timetable.synchronizer.util.CookieUtil;
 import com.khnure.timetable.synchronizer.util.GoogleCredentialHelper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -36,6 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final CalendarHelper calendarHelper;
     private final GoogleCredentialHelper googleCredentialHelper;
     private final ObjectMapper objectMapper;
+    private final CookieUtil cookieUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -43,30 +45,35 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        if (request.getCookies() == null){
+        if (request.getCookies() == null) {
             writeUnauthorizedResponse(response);
             return;
         }
 
         Optional<Cookie> jwtTokenCookie = Arrays.stream(request.getCookies()).filter(cookie -> "JWT".equals(cookie.getName())).findFirst();
-        if (jwtTokenCookie.isEmpty() || !jwtService.verify(jwtTokenCookie.get().getValue())) {
+        if (jwtTokenCookie.isEmpty()) {
             writeUnauthorizedResponse(response);
             return;
         }
+        Optional<String> jwtToken = jwtService.verifyOrRefresh(jwtTokenCookie.get().getValue());
+        if (jwtToken.isEmpty()) {
+            writeUnauthorizedResponse(response);
+            return;
+        }
+        addJwtCookie(response,jwtToken.get());
 
         String email = jwtService.getEmail(jwtTokenCookie.get().getValue());
         CustomUserDetails userDetails = (CustomUserDetails) userService.loadUserByUsername(email);
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, userDetails.getPassword(), userDetails.getAuthorities());
-        authenticationToken.setDetails(userDetails);
-
+        JwtAuthentication authenticationToken = new JwtAuthentication(userDetails.getAuthorities(), userDetails);
+        authenticationToken.setJwtToken(jwtTokenCookie.get().getValue());
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
         User user = userDetails.getUser();
         if (!calendarHelper.userHasCalendar(user.getId())) {
             String googleRefreshToken = user.getGoogleRefreshToken();
-            if (googleRefreshToken == null || googleRefreshToken.isBlank()){
+            if (googleRefreshToken == null || googleRefreshToken.isBlank()) {
                 writeReauthorizeResponse(response);
                 return;
             }
@@ -75,6 +82,10 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void addJwtCookie(HttpServletResponse response, String jwtToken) {
+        response.addCookie(cookieUtil.createJwtCookie(jwtToken));
     }
 
     private void writeReauthorizeResponse(HttpServletResponse response) throws IOException {
@@ -86,6 +97,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 .timestamp(LocalDateTime.now())
                 .message("Server couldn't find your google refresh token. Please, reauthorize using /jwt/create endpoint.")
                 .build();
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().print(objectMapper.writeValueAsString(errorResponse));
         response.getWriter().close();
     }
@@ -98,6 +110,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 .timestamp(LocalDateTime.now())
                 .message("JWT was expired.")
                 .build();
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().print(objectMapper.writeValueAsString(errorResponse));
         response.getWriter().close();
     }
