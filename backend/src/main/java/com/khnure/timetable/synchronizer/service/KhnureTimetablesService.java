@@ -13,12 +13,16 @@ import java.util.Optional;
 public class KhnureTimetablesService {
     private final KhnureTimetablesRepository khnureTimetablesRepository;
 
-    public Optional<KhnureTimetables> getCalendarIdByNameAndCalendarId(String name, Long khnureTimetableId) {
+    public Optional<KhnureTimetables> getCalendarByNameAndCalendarId(String name, Long khnureTimetableId) {
         return khnureTimetablesRepository.findByNameAndKhnureTimetableId(name, khnureTimetableId);
     }
 
+    public Optional<KhnureTimetables> getCalendarByCalendarId(Long khnureTimetableId) {
+        return khnureTimetablesRepository.findByKhnureTimetableId(khnureTimetableId);
+    }
+
     public Optional<KhnureTimetables> addKhnureTimetable(String name, Long khnureTimetableId) {
-        Optional<KhnureTimetables> timetableOptional = getCalendarIdByNameAndCalendarId(name, khnureTimetableId);
+        Optional<KhnureTimetables> timetableOptional =getCalendarByNameAndCalendarId(name, khnureTimetableId);
         if (timetableOptional.isPresent()) {
             return timetableOptional;
         } else {

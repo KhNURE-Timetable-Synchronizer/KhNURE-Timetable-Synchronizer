@@ -9,3 +9,5 @@ databaseChangeLog:
       file: db/changelog/v1.2-add-jwt-refresh-token.sql
   - include:
       file: db/changelog/v1.3-change-google_calendars-add-khnure_timetables.sql
+  - include:
+      file: db/changelog/v1.4-request_links_coordinator_timetable.sql

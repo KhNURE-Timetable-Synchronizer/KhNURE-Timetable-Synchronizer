@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface KhnureTimetablesRepository  extends JpaRepository<KhnureTimetables,Long> {
     Optional<KhnureTimetables> findByNameAndKhnureTimetableId(String name, Long khnureTimetableId);
 
+    Optional<KhnureTimetables> findByKhnureTimetableId(Long khnureTimetableId);
 }
