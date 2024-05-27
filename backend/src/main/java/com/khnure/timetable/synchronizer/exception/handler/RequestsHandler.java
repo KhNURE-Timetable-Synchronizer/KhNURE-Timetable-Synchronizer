@@ -16,27 +16,22 @@ import java.time.LocalDateTime;
 public class RequestsHandler {
     @ExceptionHandler(DuplicateRequestException.class)
     public ResponseEntity<CustomErrorResponse> handleDuplicateEntryException(DuplicateRequestException exception) {
-        CustomErrorResponse errorResponse = CustomErrorResponse.builder()
-                .error(HttpStatus.CONFLICT.getReasonPhrase())
-                .status(HttpStatus.CONFLICT.value())
-                .timestamp(LocalDateTime.now())
-                .message(exception.getMessage())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(errorResponse);
+        return buildCustomErrorResponse(exception.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(ScheduleNotFoundException.class)
     public ResponseEntity<CustomErrorResponse> handleScheduleNotFoundException(ScheduleNotFoundException exception) {
-        CustomErrorResponse errorResponse = CustomErrorResponse.builder()
-                .error(HttpStatus.NOT_FOUND.getReasonPhrase())
-                .status(HttpStatus.NOT_FOUND.value())
-                .timestamp(LocalDateTime.now())
-                .message(exception.getMessage())
-                .build();
+        return buildCustomErrorResponse(String.format("Schedule with id %d not found", exception.getId()), HttpStatus.NOT_FOUND);
+    }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(errorResponse);
+    private static ResponseEntity<CustomErrorResponse> buildCustomErrorResponse(String exceptionMessage, HttpStatus httpStatus) {
+        CustomErrorResponse customErrorResponse = CustomErrorResponse.builder()
+                .error(httpStatus.getReasonPhrase())
+                .status(httpStatus.value())
+                .timestamp(LocalDateTime.now())
+                .message(exceptionMessage)
+                .build();
+        return ResponseEntity.status(httpStatus)
+                .body(customErrorResponse);
     }
 }

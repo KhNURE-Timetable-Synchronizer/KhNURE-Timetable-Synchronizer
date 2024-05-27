@@ -1,7 +1,12 @@
 package com.khnure.timetable.synchronizer.exception;
 
+import lombok.Getter;
+
+@Getter
 public class ScheduleNotFoundException extends RuntimeException {
-    public ScheduleNotFoundException(String message) {
-        super(message);
+    private final Long id;
+
+    public ScheduleNotFoundException(Long id) {
+        this.id = id;
     }
 }

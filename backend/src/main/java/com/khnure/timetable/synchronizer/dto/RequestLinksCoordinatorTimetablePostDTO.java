@@ -10,10 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestLinksCoordinatorTimetablePostDTO {
-    @NotNull(message = "Contact account must be presented.")
     @JsonProperty("telegramAccount")
     String contactAccount ;
 
-    @NotNull(message = "Khnure timetable must be presented.")
+    @NotNull(message = "KhNURE timetable's id must be presented.")
     Long khnureTimetableId;
 }
