@@ -22,8 +22,7 @@ public class RequestLinksCoordinatorTimetableController {
     public ResponseEntity<String> createRequest(@RequestBody RequestLinksCoordinatorTimetablePostDTO requestLinksCoordinatorTimetablePostDTO, Authentication authentication) throws JsonProcessingException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getDetails();
 
-
-        requestLinksCoordinatorTimetableService.save(requestLinksCoordinatorTimetablePostDTO, userDetails);
+        requestLinksCoordinatorTimetableService.save(requestLinksCoordinatorTimetablePostDTO, userDetails.getUser().getId());
         return ResponseEntity.ok().body("{}");
     }
 }
