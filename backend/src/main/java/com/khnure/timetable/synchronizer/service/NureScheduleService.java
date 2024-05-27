@@ -20,8 +20,10 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -126,4 +128,26 @@ public class NureScheduleService {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-    }}
+    }
+
+    public Optional<ScheduleDto> getScheduleById(Long scheduleId){
+        List<ScheduleDto> allSchedules = getAllSchedules();
+        for (ScheduleDto schedule : allSchedules) {
+            if (schedule.getId().equals(scheduleId)) {
+                return Optional.of(schedule);
+            }
+        }
+        return Optional.empty();
+    }
+
+    public List<ScheduleDto> getAllSchedules(){
+        List<ScheduleDto> groups = getGroups();
+        List<ScheduleDto> teachers = getTeachers();
+
+        List<ScheduleDto> fullList = new ArrayList<>();
+        fullList.addAll(groups);
+        fullList.addAll(teachers);
+        return  fullList;
+    }
+
+}

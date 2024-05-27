@@ -46,5 +46,4 @@ public class ApplicationConfiguration {
     public HttpTransport httpTransport() {
         return GoogleNetHttpTransport.newTrustedTransport();
     }
-
 }
