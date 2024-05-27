@@ -1,9 +1,6 @@
 package com.khnure.timetable.synchronizer.mapper;
 
-import com.khnure.timetable.synchronizer.dto.GroupAPIDto;
-import com.khnure.timetable.synchronizer.dto.ScheduleDto;
-import com.khnure.timetable.synchronizer.dto.TeacherAPIDto;
-import com.khnure.timetable.synchronizer.dto.TypeScheduleDto;
+import com.khnure.timetable.synchronizer.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -15,4 +12,6 @@ public interface ScheduleDtoMapper {
     @Mapping(source = "shortName", target = "name")
     @Mapping(target = "type", expression = "java(TypeScheduleDto.TEACHER)")
     ScheduleDto toDto(TeacherAPIDto teacher);
+
+    ScheduleWithRequestedStatusDto toDtoWithRequestedStatus(ScheduleDto scheduleDto);
 }
