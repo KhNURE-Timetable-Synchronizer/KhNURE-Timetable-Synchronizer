@@ -40,11 +40,13 @@ function Users() {
   // debounced effect, will trigger only after 1 second of inactivity
   useEffect(() => {
     const handler = setTimeout(() => {
+      if (!users.data) return
+
       const newPerPage = input < 0 ? 1 : input > 100 ? 100 : input
       setInput(newPerPage)
       navigate({
         search: {
-          page: users.data!.totalUsersNumber / newPerPage < page ? 1 : page,
+          page: users.data.totalUsersNumber / newPerPage < page ? 1 : page,
           usersPerPage: newPerPage,
         },
         replace: true,
