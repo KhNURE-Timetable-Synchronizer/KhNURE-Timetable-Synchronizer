@@ -3,8 +3,10 @@ package com.khnure.timetable.synchronizer.service;
 
 import com.khnure.timetable.synchronizer.dto.RequestLinksCoordinatorTimetablePostDTO;
 import com.khnure.timetable.synchronizer.dto.ScheduleDto;
+import com.khnure.timetable.synchronizer.dto.ScheduleWithRequestedStatusDto;
 import com.khnure.timetable.synchronizer.exception.DuplicateRequestException;
 import com.khnure.timetable.synchronizer.exception.ScheduleNotFoundException;
+import com.khnure.timetable.synchronizer.mapper.ScheduleDtoMapper;
 import com.khnure.timetable.synchronizer.model.KhnureTimetables;
 import com.khnure.timetable.synchronizer.model.RequestLinksCoordinatorTimetable;
 import com.khnure.timetable.synchronizer.model.StatusRequest;
@@ -12,6 +14,7 @@ import com.khnure.timetable.synchronizer.repository.RequestLinksCoordinatorTimet
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,7 +22,9 @@ import java.util.Optional;
 public class RequestLinksCoordinatorTimetableService {
     private final RequestLinksCoordinatorTimetableRepository requestLinksCoordinatorTimetableRepository;
     private final KhnureTimetablesService khnureTimetablesService;
-    private final  NureScheduleService nureScheduleService;
+    private final NureScheduleService nureScheduleService;
+    private final ScheduleDtoMapper scheduleDtoMapper;
+
     public RequestLinksCoordinatorTimetable save(RequestLinksCoordinatorTimetablePostDTO requestLinksCoordinatorTimetablePostDTO, Long userId) {
         Optional<ScheduleDto> timetableOptional = nureScheduleService.getScheduleById(requestLinksCoordinatorTimetablePostDTO.getKhnureTimetableId());
         if (timetableOptional.isEmpty()) {
@@ -42,5 +47,23 @@ public class RequestLinksCoordinatorTimetableService {
         }
 
         return requestLinksCoordinatorTimetableRepository.save(requestLinksCoordinatorTimetable);
+    }
+
+    public List<ScheduleWithRequestedStatusDto> getAllSchedulesWithRequestedStatusByUserId(Long userId) {
+        List<RequestLinksCoordinatorTimetable> requestList = requestLinksCoordinatorTimetableRepository.findByUserId(userId);
+        return nureScheduleService.getAllSchedules().stream()
+                .map(scheduleDtoMapper::toDtoWithRequestedStatus)
+                .map(scheduleWithRequestedStatusDto -> {
+                    for (RequestLinksCoordinatorTimetable request : requestList) {
+                        if (request.getKhnureTimetables().getKhnureTimetableId().equals(scheduleWithRequestedStatusDto.getId())
+                                && request.getStatusRequest() != StatusRequest.DECLINED) {
+                            scheduleWithRequestedStatusDto.setRequested(true);
+                            return scheduleWithRequestedStatusDto;
+                        }
+                    }
+                    scheduleWithRequestedStatusDto.setRequested(false);
+                    return scheduleWithRequestedStatusDto;
+                })
+                .toList();
     }
 }
