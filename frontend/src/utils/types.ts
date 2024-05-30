@@ -1,0 +1,1 @@
+export type UserRole = "USER" | "ADMIN" | "LINKS_COORDINATOR"

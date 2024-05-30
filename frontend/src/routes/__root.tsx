@@ -18,6 +18,10 @@ export const Route = createRootRouteWithContext<RootRouterContext>()({
     const { user, logout } = useAuth()
     const router = useRouterState()
 
+    const linkClassname = (path: string) =>
+      "btn btn-sm" +
+      (router.location.pathname === path ? " btn-neutral" : " btn-ghost")
+
     return (
       <>
         <div className="w-full max-w-6xl mx-auto p-4 flex justify-between gap-2">
@@ -30,28 +34,17 @@ export const Route = createRootRouteWithContext<RootRouterContext>()({
               </div>
             </div>
 
-            <Link
-              to="/"
-              className={
-                "btn btn-sm" +
-                (router.location.pathname === "/"
-                  ? " btn-neutral"
-                  : " btn-ghost")
-              }
-            >
+            <Link to="/" className={linkClassname("/")}>
               Home
             </Link>
             {user?.role === "ADMIN" && (
-              <Link
-                to="/users"
-                className={
-                  "btn btn-sm" +
-                  (router.location.pathname === "/users"
-                    ? " btn-neutral"
-                    : " btn-ghost")
-                }
-              >
+              <Link to="/users" className={linkClassname("/users")}>
                 Users
+              </Link>
+            )}
+            {(user?.role === "USER" || user?.role === "LINKS_COORDINATOR") && (
+              <Link to="/request" className={linkClassname("/request")}>
+                Be a Link Coordinator
               </Link>
             )}
           </div>

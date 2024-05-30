@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "../utils/AuthProvider"
 import { fetchAndHandleData } from "../utils/fetchData"
+import { UserRole } from "../utils/types"
 
 export type User = {
   id: number
   email: string
-  role: "USER" | "ADMIN"
+  role: UserRole
 }
 export type UsersResponse = {
   totalUsersNumber: number

@@ -1,6 +1,7 @@
 import Cookies from "js-cookie"
 import { createContext, useContext, useState } from "react"
 import { decodeJwt } from "jose"
+import { UserRole } from "./types"
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -12,7 +13,7 @@ export type AuthUser = {
   exp: number
   id: number
   refreshToken: string
-  role: "USER" | "ADMIN"
+  role: UserRole
 }
 type AuthState = {
   user?: AuthUser
