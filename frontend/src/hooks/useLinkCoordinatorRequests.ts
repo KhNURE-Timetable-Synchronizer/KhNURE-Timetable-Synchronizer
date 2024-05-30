@@ -48,6 +48,7 @@ export default function useLinkCoordinatorRequests() {
     ).catch(error => {
       console.error(error)
       alert("Failed to add request")
+      throw error
     })
   }
 

@@ -16,6 +16,7 @@ import { Route as LoginIndexImport } from './routes/login/index'
 import { Route as AuthIndexImport } from './routes/_auth/index'
 import { Route as LoginOauthImport } from './routes/login/oauth'
 import { Route as AuthUsersImport } from './routes/_auth/users'
+import { Route as AuthRequestImport } from './routes/_auth/request'
 
 // Create/Update Routes
 
@@ -44,6 +45,11 @@ const AuthUsersRoute = AuthUsersImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 
+const AuthRequestRoute = AuthRequestImport.update({
+  path: '/request',
+  getParentRoute: () => AuthRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -51,6 +57,10 @@ declare module '@tanstack/react-router' {
     '/_auth': {
       preLoaderRoute: typeof AuthImport
       parentRoute: typeof rootRoute
+    }
+    '/_auth/request': {
+      preLoaderRoute: typeof AuthRequestImport
+      parentRoute: typeof AuthImport
     }
     '/_auth/users': {
       preLoaderRoute: typeof AuthUsersImport
@@ -74,7 +84,7 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren([
-  AuthRoute.addChildren([AuthUsersRoute, AuthIndexRoute]),
+  AuthRoute.addChildren([AuthRequestRoute, AuthUsersRoute, AuthIndexRoute]),
   LoginOauthRoute,
   LoginIndexRoute,
 ])

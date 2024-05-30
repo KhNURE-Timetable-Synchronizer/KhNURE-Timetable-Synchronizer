@@ -62,6 +62,7 @@ export default function useTimetables() {
     ).catch((error) => {
       console.error(error)
       alert("Failed to add timetable")
+      throw error
     })
   }
 
@@ -77,6 +78,7 @@ export default function useTimetables() {
     ).catch((error) => {
       console.error(error)
       alert("Failed to delete timetable")
+      throw error
     })
   }
 
