@@ -1,5 +1,6 @@
 package com.khnure.timetable.synchronizer.service;
 
+import com.khnure.timetable.synchronizer.dto.PaginationDto;
 import com.khnure.timetable.synchronizer.model.CustomUserDetails;
 import com.khnure.timetable.synchronizer.model.RefreshToken;
 import com.khnure.timetable.synchronizer.model.Role;
@@ -65,8 +66,12 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public Page<User> getUsers(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+    public Page<User> getUsers(PaginationDto paginationDto) {
+        PageRequest pageRequest = PageRequest.of(paginationDto.getPage() - 1, paginationDto.getPageSize());
         return userRepository.findAll(pageRequest);
+    }
+
+    public Optional<User> getUserById(Long id){
+        return userRepository.getUserById(id);
     }
 }

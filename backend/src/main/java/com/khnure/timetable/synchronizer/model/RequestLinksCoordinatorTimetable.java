@@ -26,8 +26,9 @@ public class RequestLinksCoordinatorTimetable {
     @Enumerated(EnumType.STRING)
     private StatusRequest statusRequest;
 
-    @Column(name = "users_id")
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "users_id")
+    private User user;
 
     @Column(name = "contact_account")
     private String contactAccount;

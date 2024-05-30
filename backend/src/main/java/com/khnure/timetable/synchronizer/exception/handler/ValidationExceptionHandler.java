@@ -101,5 +101,4 @@ public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(validationErrorResponse, httpStatus);
     }
-
 }
