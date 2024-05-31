@@ -7,9 +7,15 @@ export const Route = createFileRoute("/_auth/request")({
   component: Request,
 })
 
+const telegramRegex = /^[A-z0-9_]{5,}$/
+
 function Request() {
   const { allTimetables, refetch: refetchTimetables } = useTimetables()
-  const { requests, createRequest, refetch: refetchRequests  } = useLinkCoordinatorRequests()
+  const {
+    requests,
+    createRequest,
+    refetch: refetchRequests,
+  } = useLinkCoordinatorRequests()
 
   const [isLoading, setIsLoading] = useState(false)
   const [search, setSearch] = useState("")
@@ -19,14 +25,20 @@ function Request() {
 
   const onSubmit = async () => {
     if (!timetable) return
+    if (telegramInput && !telegramRegex.test(telegramInput)) {
+      alert(
+        "Telegram account is invalid. It should be more than 5 characters and contain only letters, numbers, and underscores."
+      )
+      return
+    }
 
     setIsLoading(true)
     await createRequest({
       khnureTimetableId: timetable.id.toString(),
       telegramAccount: telegramInput,
     }).finally(() => setIsLoading(false))
-    await refetchTimetables();
-    await refetchRequests();
+    await refetchTimetables()
+    await refetchRequests()
 
     setSearch("")
     setTimetable(undefined)
@@ -73,30 +85,34 @@ function Request() {
         <hr />
         <div className="flex flex-col gap-2 items-start">
           {timetable ? (
-                <button
-                    className="btn btn-sm btn-primary"
-                    onClick={openChooseModal}
-                >
-                  Timetable: <strong>{timetable.name}</strong>
-                </button>
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={openChooseModal}
+            >
+              Timetable: <strong>{timetable.name}</strong>
+            </button>
           ) : (
-              <button
-                  className="btn btn-sm btn-primary"
-                  onClick={openChooseModal}
-              >
-                Select a timetable
-              </button>
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={openChooseModal}
+            >
+              Select a timetable
+            </button>
           )}
           <label className="form-control w-full max-w-xs">
             <span className="label label-text">
               Telegram Account for contact
             </span>
-            <input
-              type="text"
-              className="input input-sm input-bordered w-full max-w-xs"
-              value={telegramInput}
-              onChange={e => setTelegramInput(e.target.value)}
-            />
+
+            <span className="input input-sm input-bordered w-full flex items-center max-w-xs">
+              @
+              <input
+                type="text"
+                className="grow"
+                value={telegramInput}
+                onChange={e => setTelegramInput(e.target.value)}
+              />
+            </span>
           </label>
 
           <button
