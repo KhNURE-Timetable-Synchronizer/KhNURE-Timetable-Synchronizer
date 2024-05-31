@@ -8,6 +8,7 @@ import com.khnure.timetable.synchronizer.service.RequestLinksCoordinatorTimetabl
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class RequestLinksCoordinatorTimetableController {
     private final RequestLinksCoordinatorTimetableService requestLinksCoordinatorTimetableService;
 
     @PostMapping
-    public ResponseEntity<String> createRequest(@RequestBody RequestLinksCoordinatorTimetablePostDTO requestLinksCoordinatorTimetablePostDTO, Authentication authentication) throws JsonProcessingException {
+    public ResponseEntity<String> createRequest(@RequestBody @Validated RequestLinksCoordinatorTimetablePostDTO requestLinksCoordinatorTimetablePostDTO, Authentication authentication) throws JsonProcessingException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getDetails();
 
         requestLinksCoordinatorTimetableService.save(requestLinksCoordinatorTimetablePostDTO, userDetails.getUser().getId());
