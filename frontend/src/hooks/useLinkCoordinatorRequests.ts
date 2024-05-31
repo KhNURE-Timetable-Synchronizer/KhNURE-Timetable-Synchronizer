@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "../utils/AuthProvider"
 import { fetchAndHandleData } from "../utils/fetchData"
+import { ErrorWithResponse } from '../errors/ErrorWithResponse';
+
 
 export type LinkCoordinatorRequest = {
   id: number
@@ -45,12 +47,18 @@ export default function useLinkCoordinatorRequests() {
         },
         credentials: "include",
       }
-    ).catch(error => {
-      console.error(error)
-      alert("Failed to add request")
-      throw error
+    ).catch(async error => {
+        if (error instanceof ErrorWithResponse) {
+            const jsonResponse = await error.response.json();
+            console.error(error.message, error.response);
+            alert(jsonResponse.message)
+        } else {
+            console.error(error);
+            alert("Failed to add request")
+        }
+        throw error
     })
   }
 
-  return { requests, createRequest }
+  return { requests, createRequest, refetch: requests.refetch }
 }

@@ -8,8 +8,8 @@ export const Route = createFileRoute("/_auth/request")({
 })
 
 function Request() {
-  const { allTimetables } = useTimetables()
-  const { requests, createRequest } = useLinkCoordinatorRequests()
+  const { allTimetables, refetch: refetchTimetables } = useTimetables()
+  const { requests, createRequest, refetch: refetchRequests  } = useLinkCoordinatorRequests()
 
   const [isLoading, setIsLoading] = useState(false)
   const [search, setSearch] = useState("")
@@ -25,6 +25,8 @@ function Request() {
       khnureTimetableId: timetable.id.toString(),
       telegramAccount: telegramInput,
     }).finally(() => setIsLoading(false))
+    await refetchTimetables();
+    await refetchRequests();
 
     setSearch("")
     setTimetable(undefined)
@@ -71,16 +73,19 @@ function Request() {
         <hr />
         <div className="flex flex-col gap-2 items-start">
           {timetable ? (
-            <p>
-              Timetable: <strong>{timetable.name}</strong>
-            </p>
+                <button
+                    className="btn btn-sm btn-primary"
+                    onClick={openChooseModal}
+                >
+                  Timetable: <strong>{timetable.name}</strong>
+                </button>
           ) : (
-            <button
-              className="btn btn-sm btn-primary"
-              onClick={openChooseModal}
-            >
-              Select a timetable
-            </button>
+              <button
+                  className="btn btn-sm btn-primary"
+                  onClick={openChooseModal}
+              >
+                Select a timetable
+              </button>
           )}
           <label className="form-control w-full max-w-xs">
             <span className="label label-text">

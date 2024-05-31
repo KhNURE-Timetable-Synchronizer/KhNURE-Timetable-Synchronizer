@@ -87,5 +87,6 @@ export default function useTimetables() {
     allTimetables: all,
     addTimetable,
     deleteTimetable,
+    refetch: personal.refetch,
   }
 }
