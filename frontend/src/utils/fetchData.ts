@@ -1,3 +1,4 @@
+import { ErrorWithResponse } from '../errors/ErrorWithResponse';
 export async function fetchAndHandleData<T>(
   name: string,
   onUnauthorized: () => void,
@@ -13,7 +14,8 @@ export async function fetchAndHandleData<T>(
       onUnauthorized()
       return
     }
-    throw new Error(`${name} response was not ok`)
+
+    throw new ErrorWithResponse(`${name} response was not ok`, res)
   }
   const data = await res.json()
   return data as T
