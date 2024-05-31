@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_auth/request")({
   component: Request,
 })
 
-const telegramRegex = /^[A-z0-9_]{5,}$/
+const telegramRegex = /^(?=.*[A-Za-z])(?!.*__)[A-Za-z0-9_]{5,}$/
 
 function Request() {
   const { allTimetables, refetch: refetchTimetables } = useTimetables()
