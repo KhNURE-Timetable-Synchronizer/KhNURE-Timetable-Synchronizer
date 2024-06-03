@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestLinksCoordinatorTimetablePostDTO {
+public class RequestLinksCoordinatorTimetablePostDto {
     @Pattern(regexp = "^(?=.*[A-Za-z])(?!.*__)[A-Za-z0-9_]+$",message = "The telegram nickname only can contain A-z, 0-9 or _")
     @Size(min = 5, message = "The minimum length must be 5 characters")
     @JsonProperty("telegramAccount")
-    String contactAccount;
+    String contactAccount ;
 
     @NotNull(message = "KhNURE timetable's id must be presented.")
     Long khnureTimetableId;

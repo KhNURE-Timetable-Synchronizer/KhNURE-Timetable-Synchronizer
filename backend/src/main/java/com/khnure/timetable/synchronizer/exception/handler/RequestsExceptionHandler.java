@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @RestControllerAdvice
-public class RequestsHandler {
+public class RequestsExceptionHandler {
     @ExceptionHandler(DuplicateRequestException.class)
     public ResponseEntity<CustomErrorResponse> handleDuplicateEntryException(DuplicateRequestException exception) {
         return buildCustomErrorResponse(exception.getMessage(), HttpStatus.CONFLICT);
