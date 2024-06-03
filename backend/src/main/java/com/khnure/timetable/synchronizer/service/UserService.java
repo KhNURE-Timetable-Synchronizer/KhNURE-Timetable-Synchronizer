@@ -1,6 +1,7 @@
 package com.khnure.timetable.synchronizer.service;
 
 import com.khnure.timetable.synchronizer.dto.PaginationDto;
+import com.khnure.timetable.synchronizer.exception.UserNotFoundException;
 import com.khnure.timetable.synchronizer.model.CustomUserDetails;
 import com.khnure.timetable.synchronizer.model.RefreshToken;
 import com.khnure.timetable.synchronizer.model.Role;
@@ -73,5 +74,10 @@ public class UserService implements UserDetailsService {
 
     public Optional<User> getUserById(Long id){
         return userRepository.getUserById(id);
+    }
+
+    public User findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
     }
 }

@@ -11,3 +11,5 @@ databaseChangeLog:
       file: db/changelog/v1.3-change-google_calendars-add-khnure_timetables.sql
   - include:
       file: db/changelog/v1.4-request_links_coordinator_timetable.sql
+  - include:
+      file: db/changelog/v1.5-permission-table-for-editing-links-for-timetable.sql

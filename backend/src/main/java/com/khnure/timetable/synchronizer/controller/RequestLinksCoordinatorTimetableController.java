@@ -65,4 +65,10 @@ public class RequestLinksCoordinatorTimetableController {
         RequestLinksCoordinatorTimetable request = requestLinksCoordinatorTimetableService.getRequestById(requestId);
         return ResponseEntity.ok(Map.of("nextAvailableStatusList",request.getStatusRequest().getNextAvailableStatus()));
     }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<?> updateRequestStatus(@PathVariable("id") Long requestId, @Validated @RequestBody UpdateRequestStatus updateRequestStatus){
+        requestLinksCoordinatorTimetableService.updateStatus(requestId, updateRequestStatus.getStatus());
+        return ResponseEntity.ok().build();
+    }
 }

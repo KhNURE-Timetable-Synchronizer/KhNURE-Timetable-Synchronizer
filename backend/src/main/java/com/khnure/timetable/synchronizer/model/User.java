@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -37,10 +38,15 @@ public class User {
     @Column(name = "jwt_refresh_token_expired_at")
     private LocalDateTime jwtRefreshTokenExpiredAt;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private List<LinksCoordinatorTimetablePermission> permissionList;
     public RefreshToken getRefreshToken(){
         return RefreshToken.builder()
                 .token(jwtRefreshToken)
                 .expiredAt(jwtRefreshTokenExpiredAt)
                 .build();
     }
-}
+    public void addTimetablePermission(LinksCoordinatorTimetablePermission permission){
+        this.permissionList.add(permission);
+    }}
