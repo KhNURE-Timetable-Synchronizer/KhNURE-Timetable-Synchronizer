@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,8 +48,12 @@ public class RequestLinksCoordinatorTimetableService {
                 .build();
 
         Long khnureTimetablesId = requestLinksCoordinatorTimetable.getKhnureTimetables().getId();
-        Optional<RequestLinksCoordinatorTimetable> request = requestLinksCoordinatorTimetableRepository.findByUserIdAndKhnureTimetableId(userId, khnureTimetablesId);
-        if (request.isPresent() && request.get().getStatusRequest() != StatusRequest.DECLINED) {
+
+        List<StatusRequest> permissibleStatus = new ArrayList<>();
+        permissibleStatus.add(StatusRequest.DECLINED);
+
+        Optional<RequestLinksCoordinatorTimetable> request = requestLinksCoordinatorTimetableRepository.findByUserIdAndKhnureTimetablesIdAndStatusRequestNotIn(userId, khnureTimetablesId, permissibleStatus);
+        if (request.isPresent()) {
             throw new DuplicateRequestException(String.format("There is already a request for schedule \"%s\"", requestLinksCoordinatorTimetable.getKhnureTimetables().getName()));
         }
 
