@@ -6,18 +6,17 @@ import com.khnure.timetable.synchronizer.dto.RequestLinksCoordinatorTimetablePos
 import com.khnure.timetable.synchronizer.dto.ScheduleDto;
 import com.khnure.timetable.synchronizer.dto.ScheduleWithRequestedStatusDto;
 import com.khnure.timetable.synchronizer.exception.DuplicateRequestException;
+import com.khnure.timetable.synchronizer.exception.IllegalRequestStatusTransitionException;
 import com.khnure.timetable.synchronizer.exception.RequestNotFoundException;
 import com.khnure.timetable.synchronizer.exception.ScheduleNotFoundException;
 import com.khnure.timetable.synchronizer.mapper.ScheduleDtoMapper;
-import com.khnure.timetable.synchronizer.model.KhnureTimetables;
-import com.khnure.timetable.synchronizer.model.RequestLinksCoordinatorTimetable;
-import com.khnure.timetable.synchronizer.model.StatusRequest;
-import com.khnure.timetable.synchronizer.model.User;
+import com.khnure.timetable.synchronizer.model.*;
 import com.khnure.timetable.synchronizer.repository.RequestLinksCoordinatorTimetableRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -82,5 +81,42 @@ public class RequestLinksCoordinatorTimetableService {
     public RequestLinksCoordinatorTimetable getRequestById(Long requestId) {
         return requestLinksCoordinatorTimetableRepository.findById(requestId)
                 .orElseThrow(() -> new RequestNotFoundException(requestId));
+    }
+
+    @Transactional
+    public void updateStatus(Long requestId, StatusRequest status) {
+        RequestLinksCoordinatorTimetable request = getRequestById(requestId);
+        List<StatusRequest> nextAvailableStatus = request.getStatusRequest().getNextAvailableStatus();
+        if (!nextAvailableStatus.contains(status)) {
+            throw new IllegalRequestStatusTransitionException(request.getId(), request.getStatusRequest(), status);
+        }
+        updateStatus(request, status);
+        requestLinksCoordinatorTimetableRepository.saveAndFlush(request);
+    }
+
+    private void updateStatus(RequestLinksCoordinatorTimetable request, StatusRequest status) {
+        if (StatusRequest.PROCESSED == status) {
+            setLinksCoordinatorRoleForUser(request);
+            setAccessForSpecifiedTimetable(request);
+        }
+        request.setStatusRequest(status);
+    }
+
+    private void setLinksCoordinatorRoleForUser(RequestLinksCoordinatorTimetable request) {
+        User user = userService.findById(request.getUser().getId());
+        if (user.getRole() == Role.USER) {
+            user.setRole(Role.LINKS_COORDINATOR);
+        }
+        userService.save(user);
+    }
+
+    private void setAccessForSpecifiedTimetable(RequestLinksCoordinatorTimetable request) {
+        Long khnureTimetableId = request.getKhnureTimetables().getId();
+        User user = userService.findById(request.getUser().getId());
+        user.addTimetablePermission(LinksCoordinatorTimetablePermission.builder()
+                .khnureTimetableIid(khnureTimetableId)
+                .userId(user.getId())
+                .build());
+        userService.save(user);
     }
 }
