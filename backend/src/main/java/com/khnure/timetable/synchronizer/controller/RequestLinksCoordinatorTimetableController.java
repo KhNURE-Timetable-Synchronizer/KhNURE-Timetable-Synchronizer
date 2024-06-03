@@ -59,4 +59,10 @@ public class RequestLinksCoordinatorTimetableController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{id}/status")
+    public ResponseEntity<Map<String,Object>> getNextAvailableStatus(@PathVariable("id") Long requestId) {
+        RequestLinksCoordinatorTimetable request = requestLinksCoordinatorTimetableService.getRequestById(requestId);
+        return ResponseEntity.ok(Map.of("nextAvailableStatusList",request.getStatusRequest().getNextAvailableStatus()));
+    }
 }

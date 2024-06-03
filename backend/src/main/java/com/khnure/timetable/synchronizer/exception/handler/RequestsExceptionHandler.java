@@ -1,6 +1,7 @@
 package com.khnure.timetable.synchronizer.exception.handler;
 
 import com.khnure.timetable.synchronizer.exception.DuplicateRequestException;
+import com.khnure.timetable.synchronizer.exception.RequestNotFoundException;
 import com.khnure.timetable.synchronizer.exception.ScheduleNotFoundException;
 import com.khnure.timetable.synchronizer.exception.response.CustomErrorResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,10 @@ public class RequestsExceptionHandler {
     @ExceptionHandler(ScheduleNotFoundException.class)
     public ResponseEntity<CustomErrorResponse> handleScheduleNotFoundException(ScheduleNotFoundException exception) {
         return buildCustomErrorResponse(String.format("Schedule with id %d not found", exception.getId()), HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(RequestNotFoundException.class)
+    public ResponseEntity<CustomErrorResponse> handleRequestNotFoundException(RequestNotFoundException exception) {
+        return buildCustomErrorResponse(String.format("Request with id %d not found", exception.getId()), HttpStatus.NOT_FOUND);
     }
 
     private static ResponseEntity<CustomErrorResponse> buildCustomErrorResponse(String exceptionMessage, HttpStatus httpStatus) {
