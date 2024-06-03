@@ -6,6 +6,7 @@ import com.khnure.timetable.synchronizer.dto.RequestLinksCoordinatorTimetablePos
 import com.khnure.timetable.synchronizer.dto.ScheduleDto;
 import com.khnure.timetable.synchronizer.dto.ScheduleWithRequestedStatusDto;
 import com.khnure.timetable.synchronizer.exception.DuplicateRequestException;
+import com.khnure.timetable.synchronizer.exception.RequestNotFoundException;
 import com.khnure.timetable.synchronizer.exception.ScheduleNotFoundException;
 import com.khnure.timetable.synchronizer.mapper.ScheduleDtoMapper;
 import com.khnure.timetable.synchronizer.model.KhnureTimetables;
@@ -76,5 +77,10 @@ public class RequestLinksCoordinatorTimetableService {
     public Page<RequestLinksCoordinatorTimetable> getAllRequestLinksCoordinatorTimetable(PaginationDto paginationDto) {
         PageRequest pageRequest = PageRequest.of(paginationDto.getPage() - 1, paginationDto.getPageSize());
         return requestLinksCoordinatorTimetableRepository.findAll(pageRequest);
+    }
+
+    public RequestLinksCoordinatorTimetable getRequestById(Long requestId) {
+        return requestLinksCoordinatorTimetableRepository.findById(requestId)
+                .orElseThrow(() -> new RequestNotFoundException(requestId));
     }
 }

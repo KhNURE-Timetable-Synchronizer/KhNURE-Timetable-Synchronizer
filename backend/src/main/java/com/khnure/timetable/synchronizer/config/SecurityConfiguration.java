@@ -50,6 +50,7 @@ public class SecurityConfiguration {
                             .requestMatchers(WHITE_LIST_URL).permitAll()
                             .requestMatchers(apiVersionPath + "/users").hasRole("ADMIN")
                             .requestMatchers(apiVersionPath + "/request").hasRole("ADMIN")
+                            .requestMatchers(apiVersionPath + "/request/*/status").hasRole("ADMIN")
                             .anyRequest().authenticated();
                 })
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
