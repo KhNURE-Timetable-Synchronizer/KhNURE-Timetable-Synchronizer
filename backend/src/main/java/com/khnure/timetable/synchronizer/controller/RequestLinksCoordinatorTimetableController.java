@@ -71,4 +71,10 @@ public class RequestLinksCoordinatorTimetableController {
         requestLinksCoordinatorTimetableService.updateStatus(requestId, updateRequestStatus.getStatus());
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<RequestLinksCoordinatorTimetableGetDto> getRequestLinksCoordinatorTimetableById(@PathVariable("id") Long requestId) {
+        RequestLinksCoordinatorTimetable requestLinksCoordinatorTimetable =  requestLinksCoordinatorTimetableService.getRequestLinksCoordinatorTimetableById(requestId);
+        return ResponseEntity.ok(requestLinksCoordinatorTimetableMapper.toDto(requestLinksCoordinatorTimetable));
+    }
 }
