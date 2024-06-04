@@ -51,6 +51,7 @@ public class SecurityConfiguration {
                             .requestMatchers(apiVersionPath + "/users").hasRole("ADMIN")
                             .requestMatchers(apiVersionPath + "/request").hasRole("ADMIN")
                             .requestMatchers(apiVersionPath + "/request/*/status").hasRole("ADMIN")
+                            .requestMatchers(apiVersionPath + "/request/*").hasRole("ADMIN")
                             .anyRequest().authenticated();
                 })
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -19,4 +19,6 @@ public interface RequestLinksCoordinatorTimetableRepository  extends JpaReposito
 
     @Override
     Page<RequestLinksCoordinatorTimetable> findAll(Pageable pageable);
+
+    Optional<RequestLinksCoordinatorTimetable> getRequestLinksCoordinatorTimetableById(Long requestId);
 }

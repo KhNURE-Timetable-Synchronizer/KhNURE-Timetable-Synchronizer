@@ -124,4 +124,10 @@ public class RequestLinksCoordinatorTimetableService {
                 .build());
         userService.save(user);
     }
+
+    public RequestLinksCoordinatorTimetable getRequestLinksCoordinatorTimetableById(Long requestId) {
+        Optional<RequestLinksCoordinatorTimetable> requestLinksCoordinatorTimetableOptional = requestLinksCoordinatorTimetableRepository.getRequestLinksCoordinatorTimetableById(requestId);
+        requestLinksCoordinatorTimetableOptional.orElseThrow(() -> new RequestNotFoundException(requestId));
+        return requestLinksCoordinatorTimetableOptional.get();
+    }
 }
