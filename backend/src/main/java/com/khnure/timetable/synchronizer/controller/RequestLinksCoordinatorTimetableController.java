@@ -15,10 +15,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,20 +43,19 @@ public class RequestLinksCoordinatorTimetableController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getRequestsLinksCoordinatorTimetableWithPagination(
+    public PaginationResponse<RequestLinksCoordinatorTimetableGetDto> getRequestsLinksCoordinatorTimetableWithPagination(
             @Validated({Default.class, RequestLinksCoordinatorTimetableGroup.class}) @ModelAttribute PaginationDto paginationDto) {
         Page<RequestLinksCoordinatorTimetable> requestLinksCoordinatorTimetablePage = requestLinksCoordinatorTimetableService.getAllRequestLinksCoordinatorTimetable(paginationDto);
         List<RequestLinksCoordinatorTimetableGetDto> requestLinksCoordinatorTimetableGetDtoList = requestLinksCoordinatorTimetablePage.getContent().stream()
                 .map(requestLinksCoordinatorTimetableMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("totalRequestsNumber", requestLinksCoordinatorTimetablePage.getTotalElements());
-        response.put("totalPageNumber", requestLinksCoordinatorTimetablePage.getTotalPages());
-        response.put("currentPageNumber", requestLinksCoordinatorTimetablePage.getNumber() + 1);
-        response.put("requests", requestLinksCoordinatorTimetableGetDtoList);
-
-        return ResponseEntity.ok(response);
+        return PaginationResponse.<RequestLinksCoordinatorTimetableGetDto>builder()
+                .totalItemNumber(new AbstractMap.SimpleEntry<>("totalRequestsNumber", requestLinksCoordinatorTimetablePage.getTotalElements()))
+                .totalPageNumber(requestLinksCoordinatorTimetablePage.getTotalPages())
+                .currentPageNumber(requestLinksCoordinatorTimetablePage.getNumber() + 1)
+                .data(new AbstractMap.SimpleEntry<>("requests", requestLinksCoordinatorTimetableGetDtoList))
+                .build();
     }
 
     @GetMapping("/{id}/status")
