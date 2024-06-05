@@ -37,7 +37,17 @@ function Request() {
       <p>Requested timetable: {request.requestedTimetable.name}</p>
       <p>
         Telegram:{" "}
-        {request.telegramAccount ? request.telegramAccount : "Not Provided"}
+        {request.telegramAccount ? (
+          <a
+            href={`https://t.me/${request.telegramAccount}`}
+            target="_blank"
+            className="link"
+          >
+            @{request.telegramAccount}
+          </a>
+        ) : (
+          "Not Provided"
+        )}
       </p>
       <div>
         Status:{" "}

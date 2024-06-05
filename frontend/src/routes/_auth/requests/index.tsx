@@ -89,7 +89,7 @@ function Requests() {
           {requests.data?.requests.map(r => (
             <tr key={r.id} className="hover">
               <th>
-                <Link to={`/requests/${r.id}`} className="btn btn-link p-0 h-auto min-h-0">
+                <Link to={`/requests/${r.id}`} className="link">
                   {r.id}
                 </Link>
               </th>

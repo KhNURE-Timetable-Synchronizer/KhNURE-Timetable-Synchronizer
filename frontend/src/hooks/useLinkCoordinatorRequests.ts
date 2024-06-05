@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "../utils/AuthProvider"
 import { fetchAndHandleData } from "../utils/fetchData"
-import { ErrorWithResponse } from '../errors/ErrorWithResponse';
-
+import { ErrorWithResponse } from "../errors/ErrorWithResponse"
 
 export type LinkCoordinatorRequest = {
   id: number
@@ -33,30 +32,37 @@ export default function useLinkCoordinatorRequests() {
 
   const createRequest = async (params: {
     khnureTimetableId: string
-    telegramAccount: string
+    telegramAccount?: string
   }) => {
+    let body: { khnureTimetableId: string; telegramAccount?: string } = {
+      khnureTimetableId: params.khnureTimetableId,
+    }
+    if (params.telegramAccount) {
+      body = { ...body, telegramAccount: params.telegramAccount }
+    }
+
     await fetchAndHandleData(
       "POST Link Coordinator Request",
       logout,
       `${import.meta.env.VITE_BACKEND_URL}/api/v1/request`,
       {
         method: "POST",
-        body: JSON.stringify({ ...params }),
+        body: JSON.stringify(body),
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
       }
     ).catch(async error => {
-        if (error instanceof ErrorWithResponse) {
-            const jsonResponse = await error.response.json();
-            console.error(error.message, error.response);
-            alert(jsonResponse.message)
-        } else {
-            console.error(error);
-            alert("Failed to add request")
-        }
-        throw error
+      if (error instanceof ErrorWithResponse) {
+        const jsonResponse = await error.response.json()
+        console.error(error.message, error.response)
+        alert(jsonResponse.message)
+      } else {
+        console.error(error)
+        alert("Failed to add request")
+      }
+      throw error
     })
   }
 
