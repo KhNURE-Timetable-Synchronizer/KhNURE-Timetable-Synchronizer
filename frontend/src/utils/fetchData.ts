@@ -1,4 +1,4 @@
-import { ErrorWithResponse } from '../errors/ErrorWithResponse';
+import { ErrorWithResponse } from "../errors/ErrorWithResponse"
 export async function fetchAndHandleData<T>(
   name: string,
   onUnauthorized: () => void,
@@ -18,9 +18,14 @@ export async function fetchAndHandleData<T>(
       console.warn(`404 on ${name}`)
       return null
     }
+    if (res.status >= 400 && res.status < 500) {
+      const err: { message: string } = await res.json()
+      alert(err.message)
+    }
 
     throw new ErrorWithResponse(`${name} response was not ok`, res)
   }
-  const data = await res.json()
+  const resText = await res.text()
+  const data = resText && JSON.parse(resText)
   return data as T
 }
