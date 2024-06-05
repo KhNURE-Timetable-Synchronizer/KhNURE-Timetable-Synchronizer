@@ -49,7 +49,7 @@ function Requests() {
         search: {
           page:
             requests.data.totalRequestsNumber / newPerPage < page ? 1 : page,
-          usersPerPage: newPerPage,
+          requestsPerPage: newPerPage,
         },
         replace: true,
       })
@@ -102,7 +102,7 @@ function Requests() {
             return (
               <Link
                 key={key}
-                search={{ page: value, usersPerPage: requestsPerPage }}
+                search={{ page: value, requestsPerPage: requestsPerPage }}
                 className={
                   "join-item btn" +
                   (value === undefined ? " btn-disabled" : "") +
