@@ -1,9 +1,13 @@
 import { createFileRoute, notFound } from "@tanstack/react-router"
 import { z } from "zod"
 import {
-  RequestStatuses,
+  RequestStatus,
+  requestStatuses,
   requestQueryOptions,
+  updateRequestStatus,
 } from "../../../hooks/userRequestsAdmin"
+import { useAuth } from "../../../utils/AuthProvider"
+import { useState } from "react"
 
 export const Route = createFileRoute("/_auth/requests/$requestId")({
   parseParams: params => ({
@@ -26,6 +30,22 @@ export const Route = createFileRoute("/_auth/requests/$requestId")({
 
 function Request() {
   const { request } = Route.useLoaderData()
+  const { logout } = useAuth()
+
+  const [status, setStatus] = useState<RequestStatus>(request.status)
+
+  const onStatusChange = async (status: RequestStatus) => {
+    const confirmRes = confirm(
+      `Are you sure you want to change the status to ${status}?`
+    )
+    if (!confirmRes) {
+      setStatus(request.status)
+      return
+    }
+    await updateRequestStatus(request.id, status, logout)
+    alert("Status updated")
+    setStatus(status)
+  }
 
   return (
     <div className="space-y-1">
@@ -51,13 +71,13 @@ function Request() {
       </p>
       <div>
         Status:{" "}
-        <select className="select select-sm select-bordered w-full max-w-xs">
-          {RequestStatuses.map(status => (
-            <option
-              key={status}
-              value={status}
-              selected={status === request.status}
-            >
+        <select
+          className="select select-sm select-bordered w-full max-w-xs"
+          value={status}
+          onChange={async e => onStatusChange(e.target.value as RequestStatus)}
+        >
+          {requestStatuses.map(status => (
+            <option key={status} value={status}>
               {status}
             </option>
           ))}

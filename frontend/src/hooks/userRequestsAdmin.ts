@@ -2,13 +2,13 @@ import { queryOptions, useQuery } from "@tanstack/react-query"
 import { useAuth } from "../utils/AuthProvider"
 import { fetchAndHandleData } from "../utils/fetchData"
 
-export const RequestStatuses = [
+export const requestStatuses = [
   "CREATED",
-  "ON_PROCESSING",
+  "ON PROCESSING",
   "PROCESSED",
   "DECLINED",
 ] as const
-export type RequestStatus = (typeof RequestStatuses)[number]
+export type RequestStatus = (typeof requestStatuses)[number]
 export type Request = {
   id: number
   email: string
@@ -54,6 +54,25 @@ export const requestQueryOptions = (requestId: number, logout: () => void) =>
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/request/${requestId}`
       ),
   })
+
+export const updateRequestStatus = async (
+  requestId: number,
+  status: RequestStatus,
+  logout: () => void
+) => {
+  return fetchAndHandleData<Request>(
+    "PUT Request",
+    logout,
+    `${import.meta.env.VITE_BACKEND_URL}/api/v1/request/${requestId}/status`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status }),
+    }
+  )
+}
 
 export default function useRequestsAdmin({
   page,
