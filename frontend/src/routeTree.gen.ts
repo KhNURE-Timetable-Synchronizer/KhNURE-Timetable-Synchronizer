@@ -16,8 +16,9 @@ import { Route as LoginIndexImport } from './routes/login/index'
 import { Route as AuthIndexImport } from './routes/_auth/index'
 import { Route as LoginOauthImport } from './routes/login/oauth'
 import { Route as AuthUsersImport } from './routes/_auth/users'
-import { Route as AuthRequestsImport } from './routes/_auth/requests'
 import { Route as AuthRequestImport } from './routes/_auth/request'
+import { Route as AuthRequestsIndexImport } from './routes/_auth/requests/index'
+import { Route as AuthRequestsRequestIdImport } from './routes/_auth/requests/$requestId'
 
 // Create/Update Routes
 
@@ -46,13 +47,18 @@ const AuthUsersRoute = AuthUsersImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 
-const AuthRequestsRoute = AuthRequestsImport.update({
-  path: '/requests',
+const AuthRequestRoute = AuthRequestImport.update({
+  path: '/request',
   getParentRoute: () => AuthRoute,
 } as any)
 
-const AuthRequestRoute = AuthRequestImport.update({
-  path: '/request',
+const AuthRequestsIndexRoute = AuthRequestsIndexImport.update({
+  path: '/requests/',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AuthRequestsRequestIdRoute = AuthRequestsRequestIdImport.update({
+  path: '/requests/$requestId',
   getParentRoute: () => AuthRoute,
 } as any)
 
@@ -66,10 +72,6 @@ declare module '@tanstack/react-router' {
     }
     '/_auth/request': {
       preLoaderRoute: typeof AuthRequestImport
-      parentRoute: typeof AuthImport
-    }
-    '/_auth/requests': {
-      preLoaderRoute: typeof AuthRequestsImport
       parentRoute: typeof AuthImport
     }
     '/_auth/users': {
@@ -88,6 +90,14 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginIndexImport
       parentRoute: typeof rootRoute
     }
+    '/_auth/requests/$requestId': {
+      preLoaderRoute: typeof AuthRequestsRequestIdImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/requests/': {
+      preLoaderRoute: typeof AuthRequestsIndexImport
+      parentRoute: typeof AuthImport
+    }
   }
 }
 
@@ -96,9 +106,10 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   AuthRoute.addChildren([
     AuthRequestRoute,
-    AuthRequestsRoute,
     AuthUsersRoute,
     AuthIndexRoute,
+    AuthRequestsRequestIdRoute,
+    AuthRequestsIndexRoute,
   ]),
   LoginOauthRoute,
   LoginIndexRoute,

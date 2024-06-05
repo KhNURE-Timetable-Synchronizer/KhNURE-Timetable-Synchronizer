@@ -14,6 +14,10 @@ export async function fetchAndHandleData<T>(
       onUnauthorized()
       return
     }
+    if (res.status === 404) {
+      console.warn(`404 on ${name}`)
+      return null
+    }
 
     throw new ErrorWithResponse(`${name} response was not ok`, res)
   }
