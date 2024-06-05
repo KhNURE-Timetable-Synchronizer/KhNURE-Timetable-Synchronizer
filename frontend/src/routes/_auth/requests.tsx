@@ -4,17 +4,18 @@ import {
   redirect,
   useNavigate,
 } from "@tanstack/react-router"
-import useUsers from "../../hooks/useUsers"
 import { z } from "zod"
+import useRequestsAdmin from "../../hooks/userRequestsAdmin"
 import { useEffect, useState } from "react"
 import { formatPages } from "../../utils/utils"
 
 const searchParamsSchema = z.object({
   page: z.number().optional(),
-  usersPerPage: z.number().optional(),
+  requestsPerPage: z.number().optional(),
 })
 
-export const Route = createFileRoute("/_auth/users")({
+export const Route = createFileRoute("/_auth/requests")({
+  component: Requests,
   beforeLoad: async ({ context }) => {
     if (context.auth.user?.role !== "ADMIN") {
       throw redirect({
@@ -24,31 +25,31 @@ export const Route = createFileRoute("/_auth/users")({
       })
     }
   },
-  component: Users,
   validateSearch: searchParamsSchema,
 })
 
-function Users() {
+function Requests() {
   const searchParams = Route.useSearch()
   const page = searchParams.page || 1
-  const usersPerPage = searchParams.usersPerPage || 10
+  const requestsPerPage = searchParams.requestsPerPage || 10
 
-  const { users } = useUsers({ page, usersPerPage })
+  const { requests } = useRequestsAdmin({ page, requestsPerPage })
   const navigate = useNavigate()
 
-  const [input, setInput] = useState(usersPerPage)
+  const [input, setInput] = useState(requestsPerPage)
 
   // debounced effect, will trigger only after 1 second of inactivity
   useEffect(() => {
     const handler = setTimeout(() => {
-      if (!users.data) return
+      if (!requests.data) return
 
       const newPerPage = input < 0 ? 1 : input > 100 ? 100 : input
       setInput(newPerPage)
       navigate({
         search: {
-          page: users.data.totalUsersNumber / newPerPage < page ? 1 : page,
-          usersPerPage: newPerPage,
+          page:
+            requests.data.totalRequestsNumber / newPerPage < page ? 1 : page,
+          requestsPerPage: newPerPage,
         },
         replace: true,
       })
@@ -59,20 +60,20 @@ function Users() {
 
   const pages = formatPages({
     currentPage: page,
-    totalPages: users.data?.totalPageNumber,
+    totalPages: requests.data?.totalPageNumber,
   })
 
   return (
     <div className="space-y-4">
       <div className="flex justify-end items-center gap-1">
-        <p>Users per page:</p>
+        <p>Requests per page:</p>
         <input
           type="number"
           min={1}
           max={100}
           value={input}
           className="input input-bordered input-sm"
-          onChange={e => setInput(Number(e.target.value) || usersPerPage)}
+          onChange={e => setInput(Number(e.target.value) || requestsPerPage)}
         />
       </div>
       <table className="table">
@@ -80,15 +81,17 @@ function Users() {
           <tr>
             <th>ID</th>
             <th>Email</th>
-            <th>Role</th>
+            <th>Requested Timetable</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
-          {users.data?.users.map(u => (
+          {requests.data?.requests.map(u => (
             <tr key={u.id} className="hover">
               <th>{u.id}</th>
               <td>{u.email}</td>
-              <td>{u.role}</td>
+              <td>{u.requestedTimetable.name}</td>
+              <td>{u.status}</td>
             </tr>
           ))}
         </tbody>
@@ -99,7 +102,7 @@ function Users() {
             return (
               <Link
                 key={key}
-                search={{ page: value, usersPerPage }}
+                search={{ page: value, requestsPerPage: requestsPerPage }}
                 className={
                   "join-item btn" +
                   (value === undefined ? " btn-disabled" : "") +

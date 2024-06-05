@@ -38,9 +38,14 @@ export const Route = createRootRouteWithContext<RootRouterContext>()({
               Home
             </Link>
             {user?.role === "ADMIN" && (
-              <Link to="/users" className={linkClassname("/users")}>
-                Users
-              </Link>
+              <>
+                <Link to="/users" className={linkClassname("/users")}>
+                  Users
+                </Link>
+                <Link to="/requests" className={linkClassname("/requests")}>
+                  Requests
+                </Link>
+              </>
             )}
             {(user?.role === "USER" || user?.role === "LINKS_COORDINATOR") && (
               <Link to="/request" className={linkClassname("/request")}>
