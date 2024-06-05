@@ -5,16 +5,16 @@ import {
   useNavigate,
 } from "@tanstack/react-router"
 import { z } from "zod"
-import useRequestsAdmin from "../../hooks/userRequestsAdmin"
+import useRequestsAdmin from "../../../hooks/userRequestsAdmin"
 import { useEffect, useState } from "react"
-import { formatPages } from "../../utils/utils"
+import { formatPages } from "../../../utils/utils"
 
 const searchParamsSchema = z.object({
   page: z.number().optional(),
   requestsPerPage: z.number().optional(),
 })
 
-export const Route = createFileRoute("/_auth/requests")({
+export const Route = createFileRoute("/_auth/requests/")({
   component: Requests,
   beforeLoad: async ({ context }) => {
     if (context.auth.user?.role !== "ADMIN") {
@@ -86,12 +86,16 @@ function Requests() {
           </tr>
         </thead>
         <tbody>
-          {requests.data?.requests.map(u => (
-            <tr key={u.id} className="hover">
-              <th>{u.id}</th>
-              <td>{u.email}</td>
-              <td>{u.requestedTimetable.name}</td>
-              <td>{u.status}</td>
+          {requests.data?.requests.map(r => (
+            <tr key={r.id} className="hover">
+              <th>
+                <Link to={`/requests/${r.id}`} className="btn btn-link p-0 h-auto min-h-0">
+                  {r.id}
+                </Link>
+              </th>
+              <td>{r.email}</td>
+              <td>{r.requestedTimetable.name}</td>
+              <td>{r.status}</td>
             </tr>
           ))}
         </tbody>

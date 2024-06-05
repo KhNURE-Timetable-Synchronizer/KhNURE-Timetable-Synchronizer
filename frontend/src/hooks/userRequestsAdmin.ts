@@ -1,11 +1,18 @@
-import { useQuery } from "@tanstack/react-query"
+import { queryOptions, useQuery } from "@tanstack/react-query"
 import { useAuth } from "../utils/AuthProvider"
 import { fetchAndHandleData } from "../utils/fetchData"
 
+export const RequestStatuses = [
+  "CREATED",
+  "ON_PROCESSING",
+  "PROCESSED",
+  "DECLINED",
+] as const
+export type RequestStatus = (typeof RequestStatuses)[number]
 export type Request = {
   id: number
   email: string
-  status: string
+  status: RequestStatus
   telegramAccount: string
   requestedTimetable: {
     id: number
@@ -36,6 +43,17 @@ const fetchRequests = async ({
     `${import.meta.env.VITE_BACKEND_URL}/api/v1/request?page=${page}&pageSize=${pageSize}`
   )
 }
+
+export const requestQueryOptions = (requestId: number, logout: () => void) =>
+  queryOptions({
+    queryKey: ["request", requestId],
+    queryFn: () =>
+      fetchAndHandleData<Request>(
+        "GET Request",
+        logout,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/request/${requestId}`
+      ),
+  })
 
 export default function useRequestsAdmin({
   page,
