@@ -2,12 +2,13 @@ import { createFileRoute, notFound } from "@tanstack/react-router"
 import { z } from "zod"
 import {
   RequestStatus,
-  requestStatuses,
   requestQueryOptions,
   updateRequestStatus,
+  requestStatusesQueryOptions,
 } from "../../../hooks/userRequestsAdmin"
 import { useAuth } from "../../../utils/AuthProvider"
 import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 
 export const Route = createFileRoute("/_auth/requests/$requestId")({
   parseParams: params => ({
@@ -29,8 +30,11 @@ export const Route = createFileRoute("/_auth/requests/$requestId")({
 })
 
 function Request() {
-  const { request } = Route.useLoaderData()
   const { logout } = useAuth()
+  const { requestId } = Route.useParams()
+  const { request } = Route.useLoaderData()
+
+  const statusesQuery = useQuery(requestStatusesQueryOptions(requestId, logout))
 
   const [status, setStatus] = useState<RequestStatus>(request.status)
 
@@ -45,6 +49,7 @@ function Request() {
     await updateRequestStatus(request.id, status, logout)
     alert("Status updated")
     setStatus(status)
+    await statusesQuery.refetch()
   }
 
   return (
@@ -75,12 +80,15 @@ function Request() {
           className="select select-sm select-bordered w-full max-w-xs"
           value={status}
           onChange={async e => onStatusChange(e.target.value as RequestStatus)}
+          disabled={!statusesQuery.data}
         >
-          {requestStatuses.map(status => (
-            <option key={status} value={status}>
-              {status}
-            </option>
-          ))}
+          {[status, ...(statusesQuery.data?.nextAvailableStatusList ?? [])].map(
+            status => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            )
+          )}
         </select>
       </div>
     </div>

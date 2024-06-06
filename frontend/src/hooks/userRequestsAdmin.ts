@@ -54,6 +54,19 @@ export const requestQueryOptions = (requestId: number, logout: () => void) =>
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/request/${requestId}`
       ),
   })
+export const requestStatusesQueryOptions = (
+  requestId: number,
+  logout: () => void
+) =>
+  queryOptions({
+    queryKey: ["requestStatuses", requestId],
+    queryFn: () =>
+      fetchAndHandleData<{ nextAvailableStatusList: RequestStatus[] }>(
+        "GET Request Statuses",
+        logout,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/request/${requestId}/status`
+      ),
+  })
 
 export const updateRequestStatus = async (
   requestId: number,
